@@ -26,8 +26,8 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import net.unethicalite.api.game.Skills;
 
 @PluginDescriptor(
-    name = "<html><nobr><font color='#B44DFF'>\u25cf 0xMine</font></nobr></html>",
-    description = "Mines a selectable ore — or gathers ores for a chosen bar — and banks or power-drops when full.",
+    name = "<html><nobr><font color='#B44DFF'>0xMine</font></nobr></html>",
+    description = "Mines a selectable ore - or gathers ores for a chosen bar - and banks or power-drops when full.",
     tags = {"0x", "mining", "bot", "skilling", "automation"},
     enabledByDefault = false
 )
@@ -247,7 +247,7 @@ public class MiningPlugin extends OxLoopedPlugin {
         session.bankTrips = getTripCount();
         session.xpGained = getXpGained();
         session.tree = getTargetLabel();
-        session.note = this.lastMode != null ? this.lastMode.name() + " · " + getStatus() : getStatus();
+        session.note = this.lastMode != null ? this.lastMode.name() + " | " + getStatus() : getStatus();
         if (this.barGoal != null && this.barGoal.isActive()) {
             session.barsSmelted = (int) Math.min(Integer.MAX_VALUE, this.barGoal.barsGathered());
             long gathered = 0L;
@@ -310,7 +310,7 @@ public class MiningPlugin extends OxLoopedPlugin {
         if (this.lastOre != null) {
             return this.lastOre.toString();
         }
-        return this.config != null ? this.config.ore().toString() : "—";
+        return this.config != null ? this.config.ore().toString() : "-";
     }
 
     public MiningMode getActiveMode() {

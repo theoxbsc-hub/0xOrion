@@ -27,7 +27,7 @@ import net.runelite.client.ui.PluginPanel;
 
 /**
  * Sidebar: identity and expandable past sessions.
- * Session rows use real JButtons (reliable hit targets) and natural sizing —
+ * Session rows use real JButtons (reliable hit targets) and natural sizing -
  * no fixed-height clamps that clip the last row.
  */
 public class OxInfoPanel extends PluginPanel {
@@ -63,7 +63,7 @@ public class OxInfoPanel extends PluginPanel {
         title.setForeground(PURPLE);
         title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
         header.add(title, BorderLayout.NORTH);
-        JLabel subtitle = new JLabel("Identity · history");
+        JLabel subtitle = new JLabel("Identity | history");
         subtitle.setForeground(MUTED);
         subtitle.setBorder(new EmptyBorder(2, 0, 10, 0));
         header.add(subtitle, BorderLayout.SOUTH);
@@ -153,7 +153,7 @@ public class OxInfoPanel extends PluginPanel {
 
         this.historyBody.removeAll();
         if (sessions.isEmpty()) {
-            this.historyBody.add(muted("No past sessions yet. Run a bot — history saves here."));
+            this.historyBody.add(muted("No past sessions yet. Run a bot - history saves here."));
         } else {
             for (int i = 0; i < sessions.size(); i++) {
                 if (i > 0) {
@@ -313,7 +313,7 @@ public class OxInfoPanel extends PluginPanel {
                 c.gridy = row++;
                 details.add(statLine("Last trader", blankDash(session.tree), VALUE), c);
             } else {
-                // Unknown / future scripts — only show metrics that actually have data
+                // Unknown / future scripts - only show metrics that actually have data
                 if (session.steals > 0 || session.sells > 0) {
                     c.gridy = row++;
                     details.add(statLine("Steals", String.valueOf(session.steals), VALUE), c);
@@ -342,7 +342,7 @@ public class OxInfoPanel extends PluginPanel {
                     c.gridy = row++;
                     details.add(statLine("Gathered", String.valueOf(session.itemsGathered), VALUE), c);
                 }
-                if (session.tree != null && !session.tree.isEmpty() && !"—".equals(session.tree)) {
+                if (session.tree != null && !session.tree.isEmpty() && !"-".equals(session.tree)) {
                     c.gridy = row++;
                     details.add(statLine("Target", session.tree, VALUE), c);
                 }
@@ -364,7 +364,7 @@ public class OxInfoPanel extends PluginPanel {
             card.add(details, BorderLayout.CENTER);
         }
 
-        // Width flexible, height natural — never clamp, or the last row becomes unclickable
+        // Width flexible, height natural - never clamp, or the last row becomes unclickable
         packWidth(card);
         return card;
     }
@@ -392,60 +392,60 @@ public class OxInfoPanel extends PluginPanel {
     private static String headline(OxSessionHistory.Session session) {
         String script = session.script == null || session.script.isEmpty() ? "Script" : session.script;
         StringBuilder sb = new StringBuilder(script);
-        sb.append(" · ").append(formatDuration(session));
+        sb.append(" | ").append(formatDuration(session));
         ScriptKind kind = scriptKind(session.script);
         if (kind == ScriptKind.THIEVE) {
             if (session.steals > 0) {
-                sb.append(" · steals ").append(session.steals);
+                sb.append(" | steals ").append(session.steals);
             }
             if (session.sells > 0) {
-                sb.append(" · sells ").append(session.sells);
+                sb.append(" | sells ").append(session.sells);
             }
         } else if (kind == ScriptKind.WOODCUTTING) {
             if (session.logsBanked > 0) {
-                sb.append(" · banked ").append(session.logsBanked);
+                sb.append(" | banked ").append(session.logsBanked);
             }
             if (session.logsDropped > 0) {
-                sb.append(" · dropped ").append(session.logsDropped);
+                sb.append(" | dropped ").append(session.logsDropped);
             }
         } else if (kind == ScriptKind.MINING) {
             if (session.bankTrips > 0) {
-                sb.append(" · trips ").append(session.bankTrips);
+                sb.append(" | trips ").append(session.bankTrips);
             }
             if (session.xpGained > 0) {
-                sb.append(" · xp ").append(session.xpGained);
+                sb.append(" | xp ").append(session.xpGained);
             }
         } else if (kind == ScriptKind.FISHING) {
             if (session.bankTrips > 0) {
-                sb.append(" · deposits ").append(session.bankTrips);
+                sb.append(" | deposits ").append(session.bankTrips);
             }
             if (session.itemsGathered > 0) {
-                sb.append(" · fish ").append(session.itemsGathered);
+                sb.append(" | fish ").append(session.itemsGathered);
             }
         } else if (kind == ScriptKind.SMITHING) {
             if (session.barsSmelted > 0) {
-                sb.append(" · bars ").append(session.barsSmelted);
+                sb.append(" | bars ").append(session.barsSmelted);
             }
             if (session.itemsSmithed > 0) {
-                sb.append(" · items ").append(session.itemsSmithed);
+                sb.append(" | items ").append(session.itemsSmithed);
             }
         } else if (kind == ScriptKind.MULE) {
             if (session.tradesAccepted > 0) {
-                sb.append(" · trades ").append(session.tradesAccepted);
+                sb.append(" | trades ").append(session.tradesAccepted);
             }
             if (session.bankTrips > 0) {
-                sb.append(" · bank ").append(session.bankTrips);
+                sb.append(" | bank ").append(session.bankTrips);
             }
         } else {
             if (session.steals > 0) {
-                sb.append(" · steals ").append(session.steals);
+                sb.append(" | steals ").append(session.steals);
             }
             if (session.logsBanked > 0) {
-                sb.append(" · banked ").append(session.logsBanked);
+                sb.append(" | banked ").append(session.logsBanked);
             }
         }
-        if (session.tree != null && !session.tree.isEmpty() && !"—".equals(session.tree)) {
-            sb.append(" · ").append(session.tree);
+        if (session.tree != null && !session.tree.isEmpty() && !"-".equals(session.tree)) {
+            sb.append(" | ").append(session.tree);
         }
         return sb.toString();
     }
@@ -520,7 +520,7 @@ public class OxInfoPanel extends PluginPanel {
     }
 
     private static String blankDash(String v) {
-        if (v == null || v.isEmpty() || "—".equals(v)) {
+        if (v == null || v.isEmpty() || "-".equals(v)) {
             return "-";
         }
         return v;

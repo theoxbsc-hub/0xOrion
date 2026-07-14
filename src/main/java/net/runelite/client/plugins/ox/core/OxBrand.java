@@ -11,6 +11,6 @@ public final class OxBrand {
     }
 
     public static String pluginName(String name) {
-        return "<html><nobr><font color='" + PURPLE + "'>\u25cf " + name + "</font></nobr></html>";
+        return "<html><nobr><font color='" + PURPLE + "'>" + name + "</font></nobr></html>";
     }
 }

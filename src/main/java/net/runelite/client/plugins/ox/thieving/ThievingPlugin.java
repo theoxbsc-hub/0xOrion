@@ -24,7 +24,7 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 @PluginDescriptor(
-    name = "<html><nobr><font color='#B44DFF'>\u25cf 0xThieve</font></nobr></html>",
+    name = "<html><nobr><font color='#B44DFF'>0xThieve</font></nobr></html>",
     description = "Stall thieving with level progression, shop selling, antiban, failsafe, and optional muling",
     tags = {"0x", "thieving", "stall", "bot", "automation", "mule"},
     enabledByDefault = false
@@ -194,7 +194,7 @@ public class ThievingPlugin extends OxLoopedPlugin {
     }
 
     public String getCurrentStallLabel() {
-        return this.engine != null ? this.engine.getCurrentStallLabel() : "—";
+        return this.engine != null ? this.engine.getCurrentStallLabel() : "-";
     }
 
     public int getCurrentRequiredLevel() {

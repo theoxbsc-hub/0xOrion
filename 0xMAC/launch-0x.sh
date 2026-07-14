@@ -65,7 +65,7 @@ if [[ ! -f "$IDPY" ]]; then
   exit 1
 fi
 
-# Prepare account → writes ~/.oxrl./incognito/jvm_args.txt and prints id|proxy|name
+# Prepare account → UI on stderr, result line on stdout (id|proxy|name)
 set +e
 SEL="$(python3 "$IDPY" prepare)"
 EC=$?
@@ -99,28 +99,49 @@ if [[ -n "${PROXY_RAW:-}" ]]; then
 fi
 
 echo " Launching ${ACC_NAME}..."
+echo " JAVA   $JAVA_BIN"
 echo " JAR    $JAR"
 echo " AGENT  $AGENT"
 echo
 
-exec "$JAVA_BIN" \
-  -javaagent:"$AGENT" \
-  "${JVM_ARGS[@]}" \
-  -XX:+DisableAttachMechanism \
-  -Xmx768m -Xss2m \
-  -XX:+UseSerialGC \
-  -XX:MaxMetaspaceSize=256m \
-  -XX:CompressedClassSpaceSize=128m \
-  -XX:ReservedCodeCacheSize=128m \
-  -XX:MaxDirectMemorySize=256m \
-  -XX:ActiveProcessorCount=2 \
-  -XX:+ExitOnOutOfMemoryError \
-  --add-opens java.base/sun.reflect.annotation=ALL-UNNAMED \
-  --add-opens java.base/java.net=ALL-UNNAMED \
-  -Dawt.useSystemAAFontSettings=on \
-  -Dswing.aatext=true \
-  -Drunelite.launcher.version=0xmac-1.0 \
-  -Drunelite.launcher.nojvm=true \
-  -cp "$JAR" \
-  "$MAIN" \
-  "${PROXY_ARG[@]}"
+# Bash 3.2 + set -u: empty "${arr[@]}" is an unbound-variable error
+JAVA_CMD=(
+  "$JAVA_BIN"
+  -javaagent:"$AGENT"
+)
+# shellcheck disable=SC2206
+JAVA_CMD+=("${JVM_ARGS[@]}")
+JAVA_CMD+=(
+  -XX:+DisableAttachMechanism
+  -Xmx768m -Xss2m
+  -XX:+UseSerialGC
+  -XX:MaxMetaspaceSize=256m
+  -XX:CompressedClassSpaceSize=128m
+  -XX:ReservedCodeCacheSize=128m
+  -XX:MaxDirectMemorySize=256m
+  -XX:ActiveProcessorCount=2
+  -XX:+ExitOnOutOfMemoryError
+  --add-opens java.base/sun.reflect.annotation=ALL-UNNAMED
+  --add-opens java.base/java.net=ALL-UNNAMED
+  -Dawt.useSystemAAFontSettings=on
+  -Dswing.aatext=true
+  -Drunelite.launcher.version=0xmac-1.0
+  -Drunelite.launcher.nojvm=true
+  -cp "$JAR"
+  "$MAIN"
+)
+if [[ ${#PROXY_ARG[@]} -gt 0 ]]; then
+  JAVA_CMD+=("${PROXY_ARG[@]}")
+fi
+
+# Don't use exec so launch failures stay visible in Terminal / .command windows
+set +e
+"${JAVA_CMD[@]}"
+JC=$?
+set -e
+if (( JC != 0 )); then
+  echo
+  echo " Client exited with code $JC."
+  exit "$JC"
+fi
+exit 0

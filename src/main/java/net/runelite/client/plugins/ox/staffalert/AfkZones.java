@@ -1,7 +1,7 @@
 package net.runelite.client.plugins.ox.staffalert;
 
 /**
- * Known Orion/AIO ::afk destination tiles — used when "Ignore at AFK zones" is on.
+ * Known Orion/AIO ::afk destination tiles - used when "Ignore at AFK zones" is on.
  */
 final class AfkZones {
     /** Default staff watchlist (editable in config). */
@@ -9,7 +9,7 @@ final class AfkZones {
         "Wizard, Jesse, Lark, Harry, Atom, TinyCow, Dibbes, Chames, Keensoil, Smurfy, "
             + "Threads, Babyboy, TaylorSwift, At, Azazeal, Hold Alt F4, J Beezy";
 
-    /** Centre tiles from x64 AioSkillerConstants AFK_*_DEST (not home — use Ignore at Home). */
+    /** Centre tiles from x64 AioSkillerConstants AFK_*_DEST (not home - use Ignore at Home). */
     static final int[][] AFK_CENTRES = {
         {2563, 3289}, // Farming
         {2534, 3440}, // Herblore

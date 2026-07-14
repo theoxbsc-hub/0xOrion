@@ -13,7 +13,7 @@ import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 
 @PluginDescriptor(
-    name = "<html><nobr><font color='#B44DFF'>\u25cf 0xINFO</font></nobr></html>",
+    name = "<html><nobr><font color='#B44DFF'>0xINFO</font></nobr></html>",
     description = "Account identity, active script stats, and past session history (logs banked, trips, runtime)",
     tags = {"0x", "info", "account", "mac", "proxy", "identity", "history", "sessions"},
     enabledByDefault = true

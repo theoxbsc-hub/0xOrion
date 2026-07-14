@@ -144,7 +144,7 @@ public final class OxSessionHistory {
         public String summaryLine() {
             StringBuilder sb = new StringBuilder();
             sb.append(script == null ? "Script" : script);
-            sb.append(" · ").append(formatDuration(durationMs()));
+            sb.append(" | ").append(formatDuration(durationMs()));
             String key = script == null ? "" : script.toLowerCase();
             boolean thieve = key.contains("thieve") || key.contains("thiev");
             boolean wood = key.contains("wc") || key.contains("wood");
@@ -154,95 +154,95 @@ public final class OxSessionHistory {
             boolean mule = key.contains("mule");
             if (thieve) {
                 if (steals > 0) {
-                    sb.append(" · Steals ").append(steals);
+                    sb.append(" | Steals ").append(steals);
                 }
                 if (sells > 0) {
-                    sb.append(" · Sells ").append(sells);
+                    sb.append(" | Sells ").append(sells);
                 }
             } else if (wood) {
                 if (logsBanked > 0) {
-                    sb.append(" · Banked ").append(logsBanked);
+                    sb.append(" | Banked ").append(logsBanked);
                 }
                 if (logsDropped > 0) {
-                    sb.append(" · Dropped ").append(logsDropped);
+                    sb.append(" | Dropped ").append(logsDropped);
                 }
                 if (bankTrips > 0) {
-                    sb.append(" · Trips ").append(bankTrips);
+                    sb.append(" | Trips ").append(bankTrips);
                 }
             } else if (mine) {
                 if (bankTrips > 0) {
-                    sb.append(" · Trips ").append(bankTrips);
+                    sb.append(" | Trips ").append(bankTrips);
                 }
                 if (xpGained > 0) {
-                    sb.append(" · XP ").append(xpGained);
+                    sb.append(" | XP ").append(xpGained);
                 }
                 if (itemsGathered > 0) {
-                    sb.append(" · Ores ").append(itemsGathered);
+                    sb.append(" | Ores ").append(itemsGathered);
                 }
                 if (barsSmelted > 0) {
-                    sb.append(" · Bars ").append(barsSmelted);
+                    sb.append(" | Bars ").append(barsSmelted);
                 }
             } else if (fish) {
                 if (bankTrips > 0) {
-                    sb.append(" · Deposits ").append(bankTrips);
+                    sb.append(" | Deposits ").append(bankTrips);
                 }
                 if (itemsGathered > 0) {
-                    sb.append(" · Fish ").append(itemsGathered);
+                    sb.append(" | Fish ").append(itemsGathered);
                 }
             } else if (smith) {
                 if (barsSmelted > 0) {
-                    sb.append(" · Bars ").append(barsSmelted);
+                    sb.append(" | Bars ").append(barsSmelted);
                 }
                 if (itemsSmithed > 0) {
-                    sb.append(" · Items ").append(itemsSmithed);
+                    sb.append(" | Items ").append(itemsSmithed);
                 }
                 if (bankTrips > 0) {
-                    sb.append(" · Trips ").append(bankTrips);
+                    sb.append(" | Trips ").append(bankTrips);
                 }
                 if (xpGained > 0) {
-                    sb.append(" · XP ").append(xpGained);
+                    sb.append(" | XP ").append(xpGained);
                 }
             } else if (mule) {
                 if (tradesAccepted > 0) {
-                    sb.append(" · Trades ").append(tradesAccepted);
+                    sb.append(" | Trades ").append(tradesAccepted);
                 }
                 if (bankTrips > 0) {
-                    sb.append(" · Banked ").append(bankTrips);
+                    sb.append(" | Banked ").append(bankTrips);
                 }
                 if (itemsGathered > 0) {
-                    sb.append(" · Items ").append(itemsGathered);
+                    sb.append(" | Items ").append(itemsGathered);
                 }
             } else {
                 if (steals > 0) {
-                    sb.append(" · Steals ").append(steals);
+                    sb.append(" | Steals ").append(steals);
                 }
                 if (sells > 0) {
-                    sb.append(" · Sells ").append(sells);
+                    sb.append(" | Sells ").append(sells);
                 }
                 if (logsBanked > 0) {
-                    sb.append(" · Banked ").append(logsBanked);
+                    sb.append(" | Banked ").append(logsBanked);
                 }
                 if (logsDropped > 0) {
-                    sb.append(" · Dropped ").append(logsDropped);
+                    sb.append(" | Dropped ").append(logsDropped);
                 }
                 if (bankTrips > 0) {
-                    sb.append(" · Trips ").append(bankTrips);
+                    sb.append(" | Trips ").append(bankTrips);
                 }
                 if (xpGained > 0) {
-                    sb.append(" · XP ").append(xpGained);
+                    sb.append(" | XP ").append(xpGained);
                 }
                 if (barsSmelted > 0) {
-                    sb.append(" · Bars ").append(barsSmelted);
+                    sb.append(" | Bars ").append(barsSmelted);
                 }
                 if (itemsSmithed > 0) {
-                    sb.append(" · Items ").append(itemsSmithed);
+                    sb.append(" | Items ").append(itemsSmithed);
                 }
                 if (itemsGathered > 0) {
-                    sb.append(" · Gathered ").append(itemsGathered);
+                    sb.append(" | Gathered ").append(itemsGathered);
                 }
             }
-            if (tree != null && !tree.isEmpty() && !"—".equals(tree)) {
-                sb.append(" · ").append(tree);
+            if (tree != null && !tree.isEmpty() && !"-".equals(tree)) {
+                sb.append(" | ").append(tree);
             }
             return sb.toString();
         }
@@ -250,7 +250,7 @@ public final class OxSessionHistory {
         public String metaLine() {
             String who = accountName != null && !accountName.isEmpty() ? accountName
                 : (accountId != null && !accountId.isEmpty() ? accountId : "unknown");
-            return who + " · " + formatWhen(startMs);
+            return who + " | " + formatWhen(startMs);
         }
 
         private static String formatDuration(long ms) {

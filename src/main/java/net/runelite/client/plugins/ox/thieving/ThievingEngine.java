@@ -29,7 +29,7 @@ import net.unethicalite.api.packets.MovementPackets;
 import net.unethicalite.api.packets.WidgetPackets;
 
 /**
- * Stall thieving engine — stolen/sold from x64 ThievingBot, cleaned for 0x.
+ * Stall thieving engine - stolen/sold from x64 ThievingBot, cleaned for 0x.
  */
 final class ThievingEngine {
     private static final String TRADER_ACTION = "Open-shop";
@@ -103,7 +103,7 @@ final class ThievingEngine {
         this.lastWalkPosCheckMs = 0L;
         this.state = ThievingState.STEALING;
         this.status = this.stalls.isEmpty()
-            ? "No stalls enabled — enable one in Progression"
+            ? "No stalls enabled - enable one in Progression"
             : "Starting";
         this.stealCount = 0;
         this.sellCount = 0;
@@ -147,7 +147,7 @@ final class ThievingEngine {
         if (this.stalls.isEmpty()) {
             buildEnabledStalls(config);
             if (this.stalls.isEmpty()) {
-                this.status = "No stalls enabled — enable one in Progression";
+                this.status = "No stalls enabled - enable one in Progression";
                 return 2000;
             }
         }
@@ -205,7 +205,7 @@ final class ThievingEngine {
             }
             if (this.state == ThievingState.STEALING && shouldMule(now, config)) {
                 if (parseMuleMeet(config) == null) {
-                    this.status = "Mule triggered — set Meeting Point Tile under Muling";
+                    this.status = "Mule triggered - set Meeting Point Tile under Muling";
                     return 2000;
                 }
                 this.returnLocation = player.getWorldLocation();
@@ -214,7 +214,7 @@ final class ThievingEngine {
                 this.muleWalkStartMs = now;
                 this.lastMuleWalkPos = null;
                 this.lastMuleWalkPosCheckMs = now;
-                this.status = "Mule triggered — walking to meeting point";
+                this.status = "Mule triggered - walking to meeting point";
                 return 300;
             }
         }
@@ -251,21 +251,21 @@ final class ThievingEngine {
             this.targetStallIndex = next;
             this.progressTradeStartMs = now;
             this.status = "Reached " + this.stalls.get(next).requiredLevel
-                + " Thieving — selling to move to " + this.stalls.get(next).label;
+                + " Thieving - selling to move to " + this.stalls.get(next).label;
         }
 
         if (this.advanceAfterSell || Inventory.getFreeSlots() <= 2) {
             if (!hasSellableItems()) {
                 if (this.advanceAfterSell) {
-                    this.status = "Nothing to sell — advancing to " + this.stalls.get(this.targetStallIndex).label;
+                    this.status = "Nothing to sell - advancing to " + this.stalls.get(this.targetStallIndex).label;
                     return beginWalkToTarget(now);
                 }
                 this.unsellableItemIds.clear();
-                this.status = "All items blacklisted — clearing, retrying";
+                this.status = "All items blacklisted - clearing, retrying";
                 return 5000;
             }
             if (this.advanceAfterSell && now - this.progressTradeStartMs > PROGRESS_TRADE_TIMEOUT_MS) {
-                this.status = "Trader unreachable — advancing to " + this.stalls.get(this.targetStallIndex).label;
+                this.status = "Trader unreachable - advancing to " + this.stalls.get(this.targetStallIndex).label;
                 return beginWalkToTarget(now);
             }
             NPC trader = findTrader(player);
@@ -366,7 +366,7 @@ final class ThievingEngine {
                 this.closeShopAttemptMs = now;
             }
             if (now - this.closeShopAttemptMs > CLOSE_SHOP_TIMEOUT_MS) {
-                this.status = "Shop close timeout — resetting";
+                this.status = "Shop close timeout - resetting";
                 return finishSelling(now);
             }
             this.status = "Closing shop";
@@ -410,7 +410,7 @@ final class ThievingEngine {
             return 600;
         }
         if (this.walkStartMs > 0L && now - this.walkStartMs > WALK_TIMEOUT_MS) {
-            this.status = "Walk timeout (" + dist + " tiles) — resuming at " + current().label;
+            this.status = "Walk timeout (" + dist + " tiles) - resuming at " + current().label;
             this.lastStallSeenMs = now;
             this.walkStartMs = 0L;
             this.lastWalkPos = null;
@@ -422,7 +422,7 @@ final class ThievingEngine {
             this.lastWalkPosCheckMs = now;
         } else if (now - this.lastWalkPosCheckMs > 5000L) {
             if (here.equals(this.lastWalkPos)) {
-                this.status = "Walk: stuck at " + dist + " tiles — retrying";
+                this.status = "Walk: stuck at " + dist + " tiles - retrying";
             }
             this.lastWalkPos = here;
             this.lastWalkPosCheckMs = now;
@@ -465,7 +465,7 @@ final class ThievingEngine {
     private int loopMuleWalking(Player player, long now, ThievingConfig config) {
         WorldPoint meet = parseMuleMeet(config);
         if (meet == null) {
-            this.status = "Mule: meeting tile not set — aborting";
+            this.status = "Mule: meeting tile not set - aborting";
             this.state = ThievingState.STEALING;
             this.lastMuleTimeMs = now;
             this.muleWalkStartMs = 0L;
@@ -475,14 +475,14 @@ final class ThievingEngine {
         WorldPoint here = player.getWorldLocation();
         int dist = here.distanceTo(meet);
         if (dist <= 3) {
-            this.status = "Mule: arrived — starting trade";
+            this.status = "Mule: arrived - starting trade";
             this.state = ThievingState.MULE_TRADING;
             this.mulePhase = MulePhase.FIND_MULE;
             this.mulePhaseStartMs = now;
             return 300;
         }
         if (this.muleWalkStartMs > 0L && now - this.muleWalkStartMs > MULE_WALK_TIMEOUT_MS) {
-            this.status = "Mule: walk timeout — aborting";
+            this.status = "Mule: walk timeout - aborting";
             this.state = ThievingState.STEALING;
             this.lastMuleTimeMs = now;
             this.muleWalkStartMs = 0L;
@@ -494,7 +494,7 @@ final class ThievingEngine {
             this.lastMuleWalkPosCheckMs = now;
         } else if (now - this.lastMuleWalkPosCheckMs > 5000L) {
             if (here.equals(this.lastMuleWalkPos)) {
-                this.status = "Mule: stuck at " + dist + " tiles — retrying";
+                this.status = "Mule: stuck at " + dist + " tiles - retrying";
             }
             this.lastMuleWalkPos = here;
             this.lastMuleWalkPosCheckMs = now;
@@ -509,7 +509,7 @@ final class ThievingEngine {
         if (this.mulePhase != MulePhase.WAIT_COMPLETE
             && this.mulePhase != MulePhase.OFFER_GOLD
             && now - this.mulePhaseStartMs > MULE_PHASE_TIMEOUT_MS) {
-            this.status = "Mule: phase timeout — retrying";
+            this.status = "Mule: phase timeout - retrying";
             this.mulePhase = MulePhase.FIND_MULE;
             this.mulePhaseStartMs = now;
             return 600;
@@ -528,7 +528,7 @@ final class ThievingEngine {
                     this.status = "Mule: waiting for [" + name + "]";
                     return 600;
                 }
-                this.status = "Mule: found [" + mule.getName() + "] — sending trade";
+                this.status = "Mule: found [" + mule.getName() + "] - sending trade";
                 mule.interact(MULE_TRADE_ACTION);
                 this.mulePhase = MulePhase.INTERACT_MULE;
                 this.mulePhaseStartMs = now;
@@ -543,7 +543,7 @@ final class ThievingEngine {
                             this.pendingOfferIds.add(id);
                         }
                     }
-                    this.status = "Mule: trade open — offering " + this.pendingOfferIds.size() + " type(s)";
+                    this.status = "Mule: trade open - offering " + this.pendingOfferIds.size() + " type(s)";
                     this.mulePhase = MulePhase.OFFER_GOLD;
                     this.mulePhaseStartMs = now;
                     return 600;
@@ -560,7 +560,7 @@ final class ThievingEngine {
                     return 400;
                 }
                 if (this.pendingOfferIds.isEmpty()) {
-                    this.status = "Mule: all offered — accepting screen 1";
+                    this.status = "Mule: all offered - accepting screen 1";
                     this.mulePhase = MulePhase.ACCEPT_SCREEN1;
                     this.mulePhaseStartMs = now;
                     return 800;
@@ -569,7 +569,7 @@ final class ThievingEngine {
                 Widget inv = this.client.getWidget(336, 0);
                 if (inv == null || inv.isHidden()) {
                     this.pendingOfferIds.add(0, id);
-                    this.status = "Mule: trade inventory missing — retrying";
+                    this.status = "Mule: trade inventory missing - retrying";
                     return 400;
                 }
                 Widget slot = findItemWidget(inv, id);
@@ -595,7 +595,7 @@ final class ThievingEngine {
                 }
                 Widget accept = this.client.getWidget(335, 10);
                 if (accept == null || accept.isHidden()) {
-                    this.status = "Mule: accept button missing — retrying";
+                    this.status = "Mule: accept button missing - retrying";
                     return 400;
                 }
                 this.status = "Mule: accepting screen 1";
@@ -629,7 +629,7 @@ final class ThievingEngine {
                 }
                 Widget accept = this.client.getWidget(334, 13);
                 if (accept == null || accept.isHidden()) {
-                    this.status = "Mule: screen 2 accept missing — retrying";
+                    this.status = "Mule: screen 2 accept missing - retrying";
                     return 400;
                 }
                 this.status = "Mule: accepting screen 2";
@@ -665,7 +665,7 @@ final class ThievingEngine {
         if (this.returnLocation == null || player.getWorldLocation().distanceTo(this.returnLocation) <= 3) {
             this.returnLocation = null;
             this.state = ThievingState.STEALING;
-            this.status = "Mule: returned — resuming";
+            this.status = "Mule: returned - resuming";
             return 300;
         }
         this.status = "Mule: returning (" + player.getWorldLocation().distanceTo(this.returnLocation) + " tiles)";
@@ -679,7 +679,7 @@ final class ThievingEngine {
         this.state = ThievingState.MULE_RETURNING;
         this.mulePhase = MulePhase.FIND_MULE;
         this.pendingOfferIds.clear();
-        this.status = "Mule: done — returning to steal spot";
+        this.status = "Mule: done - returning to steal spot";
     }
 
     private Player findMule(String name) {
@@ -913,7 +913,7 @@ final class ThievingEngine {
     }
 
     String getCurrentStallLabel() {
-        return this.stalls.isEmpty() ? "—" : current().label;
+        return this.stalls.isEmpty() ? "-" : current().label;
     }
 
     int getCurrentRequiredLevel() {

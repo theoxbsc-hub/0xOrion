@@ -13,7 +13,7 @@ import net.unethicalite.api.packets.MovementPackets;
 import net.unethicalite.api.widgets.Dialog;
 
 /**
- * Startup path: ::home (if far) → walk Gnome glider → Travel → search destination.
+ * Startup path: ::home (if far) -> walk Gnome glider -> Travel -> search destination.
  * Walking matches x64 AIO/Slayer packet-step style (not Walker walkTo).
  */
 final class WcGliderTravel {
@@ -116,29 +116,31 @@ final class WcGliderTravel {
                 return 800;
             }
             case SEARCH: {
+                // x64 Slayer / GliderTeleporter: LEFT click search @ 75,305 (not right-click)
                 this.status = "Travel: opening search";
-                Mouse.click(75, 305, false);
+                Mouse.click(75, 305, true);
                 this.phase = Phase.TYPE;
                 this.phaseAtMs = now;
                 return 3000;
             }
             case TYPE: {
                 this.status = "Travel: typing '" + dest + "'";
-                typeCommand(dest);
+                typeSearchQuery(dest);
                 this.phase = Phase.SELECT;
                 this.phaseAtMs = now;
                 return 1200;
             }
             case SELECT: {
+                // x64: LEFT click result @ 220,90
                 this.preClickPos = here;
                 this.status = "Travel: selecting destination";
-                Mouse.click(220, 90, false);
+                Mouse.click(220, 90, true);
                 this.phase = Phase.VERIFY;
                 this.phaseAtMs = now;
                 return 1500;
             }
             case VERIFY: {
-                if (Dialog.isOpen()) {
+                if (Dialog.isOpen() && Dialog.isViewingOptions()) {
                     this.status = "Travel: confirming dialog";
                     if (!Dialog.chooseOption("Yes, take me there") && !Dialog.chooseOption("Yes")) {
                         Dialog.chooseOption(1);
@@ -153,7 +155,7 @@ final class WcGliderTravel {
                     return Integer.MIN_VALUE;
                 }
                 if (now - this.phaseAtMs > 6000L) {
-                    this.status = "Travel: teleport timeout — retry";
+                    this.status = "Travel: teleport timeout - retry";
                     this.phase = Phase.TRAVEL;
                     this.phaseAtMs = now;
                     return 300;
@@ -294,6 +296,21 @@ final class WcGliderTravel {
             } catch (Throwable ignored) {
                 // best-effort
             }
+        }
+    }
+
+    /** Same as x64 HumanInput.command: type char-by-char then Enter (glider search). */
+    private static void typeSearchQuery(String text) {
+        if (text == null || text.isEmpty()) {
+            return;
+        }
+        try {
+            for (int i = 0; i < text.length(); i++) {
+                Keyboard.type(text.charAt(i));
+            }
+            Keyboard.sendEnter();
+        } catch (Throwable t) {
+            typeCommand(text);
         }
     }
 

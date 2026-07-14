@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @PluginDescriptor(
-    name = "<html><nobr><font color='#B44DFF'>\u25cf 0xAutoLogin</font></nobr></html>",
+    name = "<html><nobr><font color='#B44DFF'>0xAutoLogin</font></nobr></html>",
     description = "Logs in with the account selected in Launch-0x (username/password). Re-logs after disconnect.",
     tags = {"0x", "login", "auto", "account"},
     enabledByDefault = true
@@ -47,7 +47,7 @@ public class AutoLoginPlugin extends OxLoopedPlugin {
         String user = resolveUsername();
         OxPluginRegistry.register("0xAutoLogin");
         if (user.isEmpty()) {
-            OxConsole.warn("AutoLogin", "no username — set Launch-0x account or fallback config");
+            OxConsole.warn("AutoLogin", "no username - set Launch-0x account or fallback config");
         } else {
             OxConsole.info("AutoLogin", "ready  user=" + user);
         }

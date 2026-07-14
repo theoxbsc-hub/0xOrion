@@ -118,7 +118,7 @@ class MiningOverlay extends Overlay {
 
     private static String shortLabel(String label) {
         if (label == null || label.isEmpty()) {
-            return "—";
+            return "-";
         }
         return label.length() > 10 ? label.substring(0, 10) : label;
     }

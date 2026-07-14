@@ -102,7 +102,7 @@ public interface StaffAlertConfig extends Config {
     @ConfigItem(
         keyName = "scanIntervalMs",
         name = "Scan interval (ms)",
-        description = "Lower = faster detection. 150–300 recommended for staff",
+        description = "Lower = faster detection. 150-300 recommended for staff",
         section = detectionSection,
         position = 7
     )
@@ -184,7 +184,7 @@ public interface StaffAlertConfig extends Config {
     @ConfigItem(
         keyName = "ignoreAtHome",
         name = "Ignore at Home",
-        description = "When ON, watched staff around ::home will NOT trigger logout. Off by default — turn on only if you want staff to be ignored at home.",
+        description = "When ON, watched staff around ::home will NOT trigger logout. Off by default - turn on only if you want staff to be ignored at home.",
         section = zonesSection,
         position = 2
     )

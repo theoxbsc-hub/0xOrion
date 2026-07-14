@@ -18,7 +18,9 @@ brew install --cask temurin@11   # JDK 11+
 
 `../dist/0x-client.jar` and `../dist/ox-incognito-agent.jar` ship in the repo — no copy step.
 
-If the account GUI fails to open (missing Tk): `brew install python-tk` then retry, or `./add-account.sh --cli`.
+If the account GUI closes instantly (Apple/system Tk crash on Sequoia):  
+`brew install python-tk@3.12` then retry `./add-account.sh`.  
+Or use CLI: `./add-account.sh --cli`.
 
 Accounts: `~/.oxrl./accounts/*.json` (create them on the Mac so identities are Mac-flavoured).
 

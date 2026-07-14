@@ -64,7 +64,7 @@ public final class WoodcuttingEngine {
         if (settings.skipTravelIfTreesNearby && treeNearby(settings)) {
             this.travelDone = true;
             this.state = State.CHOPPING;
-            this.status = "Trees nearby — skipping travel";
+            this.status = "Trees nearby - skipping travel";
             OxConsole.info("WCBot", this.status);
             return;
         }
@@ -134,7 +134,7 @@ public final class WoodcuttingEngine {
         if (delay == Integer.MIN_VALUE) {
             this.travelDone = true;
             this.state = State.CHOPPING;
-            this.status = "Arrived — starting woodcutting";
+            this.status = "Arrived - starting woodcutting";
             OxConsole.info("WCBot", this.status);
             return 800;
         }
@@ -159,11 +159,11 @@ public final class WoodcuttingEngine {
                     this.pendingClearCount = countLogs(settings);
                     if (settings.mode == WoodcuttingMode.DROP) {
                         this.state = State.DROPPING;
-                        this.status = "Tier change — dropping old logs";
+                        this.status = "Tier change - dropping old logs";
                     } else {
                         this.state = State.OPENING_DEPOSIT;
                         this.depositInteractedAtMs = 0L;
-                        this.status = "Tier change — banking old logs";
+                        this.status = "Tier change - banking old logs";
                     }
                 }
             } else {
@@ -204,16 +204,16 @@ public final class WoodcuttingEngine {
 
     private int chop(Settings settings) {
         if (settings.tier == null) {
-            this.status = "No trees enabled — tick Progression";
+            this.status = "No trees enabled - tick Progression";
             return 1500;
         }
         if (Inventory.getFreeSlots() == 0) {
             if (settings.mode == WoodcuttingMode.DROP) {
-                this.status = "Inventory full — dropping logs";
+                this.status = "Inventory full - dropping logs";
                 this.pendingClearCount = countLogs(settings);
                 this.state = State.DROPPING;
             } else {
-                this.status = "Inventory full — finding deposit box";
+                this.status = "Inventory full - finding deposit box";
                 this.pendingClearCount = countLogs(settings);
                 this.state = State.OPENING_DEPOSIT;
                 this.depositInteractedAtMs = 0L;
@@ -279,7 +279,7 @@ public final class WoodcuttingEngine {
 
     private int openDeposit(Settings settings) {
         if (DepositBox.isOpen()) {
-            this.status = "Deposit box open — depositing";
+            this.status = "Deposit box open - depositing";
             this.state = State.DEPOSITING;
             this.depositSentAtMs = 0L;
             return 300;
@@ -355,7 +355,7 @@ public final class WoodcuttingEngine {
     private int drop(Settings settings) {
         List<Item> logs = Inventory.getAll(item -> TreeProgression.isLogItem(item, settings.config));
         if (logs.isEmpty()) {
-            this.status = "Dropped — resuming";
+            this.status = "Dropped - resuming";
             this.logsDropped += Math.max(0, this.pendingClearCount);
             this.pendingClearCount = 0;
             ++this.cycleCount;

@@ -37,7 +37,7 @@ import net.unethicalite.api.packets.WidgetPackets;
 import net.unethicalite.api.widgets.Widgets;
 
 @PluginDescriptor(
-    name = "<html><nobr><font color='#B44DFF'>\u25cf 0xMule</font></nobr></html>",
+    name = "<html><nobr><font color='#B44DFF'>0xMule</font></nobr></html>",
     description = "Standalone mule: auto-accepts incoming trades, then banks the haul at home.",
     tags = {"0x", "mule", "trade", "bank", "bot"},
     enabledByDefault = false
@@ -74,7 +74,7 @@ public class MulePlugin extends OxLoopedPlugin {
     private long screen1OpenedMs;
     private long lastBankInteractMs;
     private volatile String pendingTraderName;
-    private String lastTrader = "—";
+    private String lastTrader = "-";
     private boolean screen2AcceptClicked;
     private boolean needsBank;
     private int tradesAccepted;
@@ -101,7 +101,7 @@ public class MulePlugin extends OxLoopedPlugin {
         this.screen1OpenedMs = 0L;
         this.lastBankInteractMs = 0L;
         this.pendingTraderName = null;
-        this.lastTrader = "—";
+        this.lastTrader = "-";
         this.screen2AcceptClicked = false;
         this.needsBank = false;
         this.tradesAccepted = 0;
@@ -110,7 +110,7 @@ public class MulePlugin extends OxLoopedPlugin {
         this.pendingDepositCount = 0;
         OxPluginRegistry.register("0xMule");
         publishLiveStats();
-        OxConsole.info("Mule", "script ready — waiting for trades");
+        OxConsole.info("Mule", "script ready - waiting for trades");
     }
 
     @Override
@@ -177,7 +177,7 @@ public class MulePlugin extends OxLoopedPlugin {
         }
         if (!this.loggedInLastTick) {
             this.loggedInLastTick = true;
-            OxConsole.info("Mule", "session started — listening for trades");
+            OxConsole.info("Mule", "session started - listening for trades");
             publishLiveStats();
             return 1200;
         }
@@ -200,7 +200,7 @@ public class MulePlugin extends OxLoopedPlugin {
                 publishLiveStats();
                 return 1000;
             }
-            this.status = "Screen 2 open — accept missing";
+            this.status = "Screen 2 open - accept missing";
             publishLiveStats();
             return 800;
         }
@@ -210,14 +210,14 @@ public class MulePlugin extends OxLoopedPlugin {
             long now = System.currentTimeMillis();
             if (this.screen1OpenedMs == 0L) {
                 this.screen1OpenedMs = now;
-                this.status = "Trade screen 1 — waiting for items...";
+                this.status = "Trade screen 1 - waiting for items...";
                 publishLiveStats();
                 return 600;
             }
             long delay = this.config.screen1AcceptDelayMs();
             long elapsed = now - this.screen1OpenedMs;
             if (elapsed < delay) {
-                this.status = "Trade screen 1 — accepting in " + ((delay - elapsed) / 1000L) + "s";
+                this.status = "Trade screen 1 - accepting in " + ((delay - elapsed) / 1000L) + "s";
                 publishLiveStats();
                 return 600;
             }
@@ -227,7 +227,7 @@ public class MulePlugin extends OxLoopedPlugin {
                 MousePackets.queueClickPacket();
                 WidgetPackets.widgetFirstOption(accept);
             } else {
-                this.status = "Screen 1 open — accept missing";
+                this.status = "Screen 1 open - accept missing";
             }
             publishLiveStats();
             return 800;
@@ -242,7 +242,7 @@ public class MulePlugin extends OxLoopedPlugin {
                 this.lastTrader = this.pendingTraderName;
             }
             OxConsole.info("Mule", "trade accepted"
-                + (this.lastTrader != null && !"—".equals(this.lastTrader) ? " from " + this.lastTrader : "")
+                + (this.lastTrader != null && !"-".equals(this.lastTrader) ? " from " + this.lastTrader : "")
                 + "  total=" + this.tradesAccepted);
             if (this.config.autoBankAfterTrade()) {
                 this.needsBank = true;
@@ -276,7 +276,7 @@ public class MulePlugin extends OxLoopedPlugin {
                 return 1200;
             }
             if (name != null && !name.isEmpty()) {
-                this.status = "Trade from " + name + " — not nearby";
+                this.status = "Trade from " + name + " - not nearby";
                 this.lastTrader = name;
             } else {
                 this.status = "Accepting trade (unknown player)";
@@ -314,7 +314,7 @@ public class MulePlugin extends OxLoopedPlugin {
             this.bankTrips++;
             this.needsBank = false;
             this.state = State.WAITING;
-            this.status = "Banked — waiting for trade";
+            this.status = "Banked - waiting for trade";
             OxConsole.info("Mule", "banked haul  trips=" + this.bankTrips + "  items~" + this.itemsBanked);
             return 800;
         }
@@ -632,7 +632,7 @@ public class MulePlugin extends OxLoopedPlugin {
     }
 
     public String getLastTrader() {
-        return this.lastTrader == null || this.lastTrader.isEmpty() ? "—" : this.lastTrader;
+        return this.lastTrader == null || this.lastTrader.isEmpty() ? "-" : this.lastTrader;
     }
 
     private static String stripTags(String s) {

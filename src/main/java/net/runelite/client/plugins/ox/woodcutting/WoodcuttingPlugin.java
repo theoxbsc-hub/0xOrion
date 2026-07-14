@@ -22,8 +22,8 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 @PluginDescriptor(
-    name = "<html><nobr><font color='#B44DFF'>\u25cf 0xWCBot</font></nobr></html>",
-    description = "Auto woodcutting with level progression (Normal→Oak→Willow→Maple→Yew→Magic). Deposit log IDs follow the active tree.",
+    name = "<html><nobr><font color='#B44DFF'>0xWCBot</font></nobr></html>",
+    description = "Auto woodcutting with level progression (Normal->Oak->Willow->Maple->Yew->Magic). Deposit log IDs follow the active tree.",
     tags = {"0x", "woodcutting", "bot", "automation", "deposit", "progression"},
     enabledByDefault = false
 )
@@ -226,20 +226,20 @@ public class WoodcuttingPlugin extends OxLoopedPlugin {
         if (this.lastResolvedTier != null) {
             return this.lastResolvedTier.label;
         }
-        return "—";
+        return "-";
     }
 
     public String getActiveLogId() {
         TreeTier active = this.engine != null ? this.engine.getActiveTier() : this.lastResolvedTier;
         if (active == null) {
-            return "—";
+            return "-";
         }
         return String.valueOf(TreeProgression.logItemId(active, this.config));
     }
 
     private static String shortTree(String label) {
         if (label == null || label.isEmpty()) {
-            return "—";
+            return "-";
         }
         int cut = label.indexOf(" (");
         return cut > 0 ? label.substring(0, cut) : label;

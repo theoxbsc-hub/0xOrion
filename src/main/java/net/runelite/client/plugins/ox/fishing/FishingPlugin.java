@@ -34,8 +34,8 @@ import net.unethicalite.api.items.DepositBox;
 import net.unethicalite.api.items.Inventory;
 
 @PluginDescriptor(
-    name = "<html><nobr><font color='#B44DFF'>\u25cf 0xFish</font></nobr></html>",
-    description = "Progressive Seabright Pier fishing (shrimp→lobster→monk→shark→angler) with glider travel and deposit any fish.",
+    name = "<html><nobr><font color='#B44DFF'>0xFish</font></nobr></html>",
+    description = "Progressive Seabright Pier fishing (shrimp->lobster->monk->shark->angler) with glider travel and deposit any fish.",
     tags = {"0x", "fishing", "bot", "automation", "glider", "progression"},
     enabledByDefault = false
 )
@@ -190,11 +190,11 @@ public class FishingPlugin extends OxLoopedPlugin {
             ? this.activeTier
             : FishProgression.resolve(this.config, fishingLevel());
 
-        // Already at pier (spot in range) — never ::home
+        // Already at pier (spot in range) - never ::home
         if (this.config.skipTravelIfSpotNearby() && spotNearby(tier)) {
             this.travelDone = true;
             this.state = FishingState.FISHING;
-            this.status = "At pier — skipping travel";
+            this.status = "At pier - skipping travel";
             OxConsole.info("Fish", this.status);
             return;
         }
@@ -208,14 +208,14 @@ public class FishingPlugin extends OxLoopedPlugin {
             return;
         }
 
-        // Started away from home (e.g. already at pier before spots load) — stay put
+        // Started away from home (e.g. already at pier before spots load) - stay put
         this.travelDone = true;
         this.state = FishingState.FISHING;
-        this.status = "Not at home — skipping travel";
+        this.status = "Not at home - skipping travel";
         OxConsole.info("Fish", this.status);
     }
 
-    /** At Seers home / glider area — same tiles WC uses. */
+    /** At Seers home / glider area - same tiles WC uses. */
     private static boolean shouldTravelFromHome(Player player) {
         if (player == null || player.getWorldLocation() == null) {
             return false;
@@ -238,7 +238,7 @@ public class FishingPlugin extends OxLoopedPlugin {
         if (delay == Integer.MIN_VALUE) {
             this.travelDone = true;
             this.state = FishingState.FISHING;
-            this.status = "Arrived — starting fishing";
+            this.status = "Arrived - starting fishing";
             OxConsole.info("Fish", this.status);
             return 800;
         }
@@ -260,17 +260,17 @@ public class FishingPlugin extends OxLoopedPlugin {
                 this.pendingClearCount = countFish();
                 if (this.config.fishingMode() == FishingMode.DROP) {
                     this.state = FishingState.DROPPING;
-                    this.status = "Tier change — dropping leftover fish";
+                    this.status = "Tier change - dropping leftover fish";
                 } else {
                     this.state = FishingState.OPENING_BARREL;
                     this.barrelInteractedAtMs = 0L;
-                    this.status = "Tier change — banking leftover fish";
+                    this.status = "Tier change - banking leftover fish";
                 }
             }
             this.activeTier = resolved;
             if (this.lastLoggedTier != resolved) {
                 this.lastLoggedTier = resolved;
-                OxConsole.info("Fish", "tier → " + resolved.label
+                OxConsole.info("Fish", "tier -> " + resolved.label
                     + "  spot=" + resolved.spotNpcId
                     + "  action=" + resolved.fishingAction);
             }
@@ -311,7 +311,7 @@ public class FishingPlugin extends OxLoopedPlugin {
     }
 
     /**
-     * Click the configured action only. For Monkfish this must be Net — never Harpoon.
+     * Click the configured action only. For Monkfish this must be Net - never Harpoon.
      */
     private static boolean interactSpot(NPC spot, FishTier tier) {
         String wanted = tier.fishingAction;
@@ -367,10 +367,10 @@ public class FishingPlugin extends OxLoopedPlugin {
 
     private int beginInventoryClear(String reason) {
         if (this.config.fishingMode() == FishingMode.DROP) {
-            this.status = reason + " — dropping fish";
+            this.status = reason + " - dropping fish";
             this.state = FishingState.DROPPING;
         } else {
-            this.status = reason + " — finding barrel";
+            this.status = reason + " - finding barrel";
             this.state = FishingState.OPENING_BARREL;
             this.barrelInteractedAtMs = 0L;
         }
@@ -380,7 +380,7 @@ public class FishingPlugin extends OxLoopedPlugin {
 
     private int loopOpeningBarrel() {
         if (DepositBox.isOpen()) {
-            this.status = "Deposit box open — depositing";
+            this.status = "Deposit box open - depositing";
             this.state = FishingState.DEPOSITING;
             this.depositSentAtMs = 0L;
             return 300;
@@ -428,7 +428,7 @@ public class FishingPlugin extends OxLoopedPlugin {
         }
 
         // Same pattern as WC: click fish item slots in deposit-box inventory (192:2).
-        // Do NOT click 192:19 — on this client that is the quantity-All control.
+        // Do NOT click 192:19 - on this client that is the quantity-All control.
         List<Integer> fishIds = fishIdsInInventory();
         Widget inventory = this.client.getWidget(192, 2);
         if (inventory != null) {
@@ -477,7 +477,7 @@ public class FishingPlugin extends OxLoopedPlugin {
     private int loopDropping() {
         List<Item> fish = Inventory.getAll(FishProgression::isFishItem);
         if (fish.isEmpty()) {
-            this.status = "Dropped — resuming";
+            this.status = "Dropped - resuming";
             if (this.pendingClearCount > 0) {
                 // counted as "cleared" for session; drop mode does not bank
                 this.pendingClearCount = 0;
@@ -563,7 +563,7 @@ public class FishingPlugin extends OxLoopedPlugin {
         session.bankTrips = getDepositCount();
         session.itemsGathered = this.fishBanked;
         session.tree = getFishLabel();
-        session.note = getModeLabel() + " · " + getStatus();
+        session.note = getModeLabel() + " | " + getStatus();
         OxSessionHistory.save(session);
     }
 
@@ -596,7 +596,7 @@ public class FishingPlugin extends OxLoopedPlugin {
         if (tier == null && this.config != null) {
             tier = FishProgression.resolve(this.config, fishingLevel());
         }
-        return tier != null ? tier.label : "—";
+        return tier != null ? tier.label : "-";
     }
 
     public int getFishingLevel() {

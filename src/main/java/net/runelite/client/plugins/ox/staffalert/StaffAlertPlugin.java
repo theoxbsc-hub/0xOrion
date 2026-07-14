@@ -28,8 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @PluginDescriptor(
-    name = "<html><nobr><font color='#B44DFF'>\u25cf 0xStaffAlert</font></nobr></html>",
-    description = "Instant logout when any watched username (or proximity panic) is nearby. Add names in config — freezes AutoLogin afterwards.",
+    name = "<html><nobr><font color='#B44DFF'>0xStaffAlert</font></nobr></html>",
+    description = "Instant logout when any watched username (or proximity panic) is nearby. Add names in config - freezes AutoLogin afterwards.",
     tags = {"0x", "staff", "alert", "logout", "shield", "watch", "panic"},
     enabledByDefault = true
 )
@@ -72,7 +72,7 @@ public class StaffAlertPlugin extends OxLoopedPlugin {
         OxPluginRegistry.register("0xStaffAlert");
         List<String> names = this.scanner.parseWatchEntries();
         OxConsole.info("StaffAlert", "armed  watch=" + names.size()
-            + "  names=[" + String.join(", ", names.size() > 8 ? names.subList(0, 8) : names) + (names.size() > 8 ? ", …" : "") + "]"
+            + "  names=[" + String.join(", ", names.size() > 8 ? names.subList(0, 8) : names) + (names.size() > 8 ? ", ..." : "") + "]"
             + "  homeIgnore=" + this.config.ignoreAtHome()
             + "  afkIgnore=" + this.config.ignoreAtAfkZones()
             + "  reactions=" + this.config.enabled());
@@ -123,7 +123,7 @@ public class StaffAlertPlugin extends OxLoopedPlugin {
         if (now < this.reArmAtMs) {
             return;
         }
-        // Instant check on spawn — same scan path as the loop
+        // Instant check on spawn - same scan path as the loop
         StaffScanner.Detection detection = this.scanner.scan(this.client);
         if (detection != null) {
             triggerLogout(detection, now, "player spawn");
@@ -148,7 +148,7 @@ public class StaffAlertPlugin extends OxLoopedPlugin {
             && Game.isLoggedIn()) {
             StaffScanner.Detection lingering = this.scanner.scan(this.client);
             if (lingering != null) {
-                this.triggerLogout(lingering, now, "extended — still nearby");
+                this.triggerLogout(lingering, now, "extended - still nearby");
                 return this.config.scanIntervalMs();
             }
         }
@@ -163,12 +163,12 @@ public class StaffAlertPlugin extends OxLoopedPlugin {
         }
 
         if (!this.config.enabled()) {
-            this.lastEvent = "Reactions OFF — enable in 0xStaffAlert config";
+            this.lastEvent = "Reactions OFF - enable in 0xStaffAlert config";
             return 1000;
         }
 
         if (this.scanner.uniqueWatchCount() == 0 && !this.config.proximityPanic()) {
-            this.lastEvent = "Watchlist empty — add usernames";
+            this.lastEvent = "Watchlist empty - add usernames";
             return 1000;
         }
 

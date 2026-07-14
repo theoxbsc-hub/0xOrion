@@ -245,6 +245,8 @@ final class StaffScanner {
         if (!spaced.isEmpty() && watched.contains(spaced)) {
             return true;
         }
+        // Exact / space-insensitive match only.
+        // Do NOT use substring contains - short watch entries like "At" false-positive on "Efata".
         for (String entry : watched) {
             if (entry == null || entry.length() < 2) {
                 continue;
@@ -253,9 +255,7 @@ final class StaffScanner {
             if (entryKey.isEmpty()) {
                 continue;
             }
-            if (playerKey.equals(entryKey)
-                || playerKey.contains(entryKey)
-                || entryKey.contains(playerKey)) {
+            if (playerKey.equals(entryKey)) {
                 return true;
             }
         }

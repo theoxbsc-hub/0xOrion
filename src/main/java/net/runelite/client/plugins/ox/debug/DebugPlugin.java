@@ -18,8 +18,8 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 @PluginDescriptor(
-    name = "<html><nobr><font color='#B44DFF'>\u25cf 0xDEBUG</font></nobr></html>",
-    description = "Shows IDs and names for nearby entities — use to discover server-specific IDs",
+    name = "<html><nobr><font color='#B44DFF'>0xDEBUG</font></nobr></html>",
+    description = "Shows IDs and names for nearby entities - use to discover server-specific IDs",
     tags = {"0x", "inspector", "ids", "debug", "entity"},
     enabledByDefault = false
 )

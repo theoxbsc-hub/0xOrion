@@ -93,7 +93,7 @@ public final class TreeProgression {
             return false;
         }
         String lower = name.toLowerCase();
-        // "Oak logs", "Logs", "Magic logs" — avoid matching "longbow"
+        // "Oak logs", "Logs", "Magic logs" - avoid matching "longbow"
         return lower.contains("logs") || lower.equals("log");
     }
 

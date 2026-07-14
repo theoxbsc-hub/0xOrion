@@ -23,7 +23,7 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 @PluginDescriptor(
-    name = "<html><nobr><font color='#B44DFF'>\u25cf 0xSmith</font></nobr></html>",
+    name = "<html><nobr><font color='#B44DFF'>0xSmith</font></nobr></html>",
     description = "Auto smithing: bank, smelt ores into bars, smith bars into the highest item your level allows.",
     tags = {"0x", "smithing", "smith", "smelt", "bot", "skilling", "automation"},
     enabledByDefault = false

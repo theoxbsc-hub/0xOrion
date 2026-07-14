@@ -2,7 +2,7 @@ package net.runelite.client.plugins.ox.woodcutting;
 
 /**
  * WC progression ladder (vanilla reqs + Orion/OSRS-style object/log IDs).
- * Object ID arrays include common variants — override in config if Orion differs (use 0xDEBUG).
+ * Object ID arrays include common variants - override in config if Orion differs (use 0xDEBUG).
  */
 public enum TreeTier {
     NORMAL(1, "Normal", 1511, 1276, 1278, 1282, 1286),

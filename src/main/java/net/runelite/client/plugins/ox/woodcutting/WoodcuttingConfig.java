@@ -9,12 +9,12 @@ import net.runelite.client.config.ConfigSection;
 public interface WoodcuttingConfig extends Config {
     @ConfigSection(
         name = "Progression",
-        description = "Enable tree tiers (lowest→highest). The bot chops the highest enabled tree you can use for your WC level. Enable only one for single-tree mode.",
+        description = "Enable tree tiers (lowest->highest). The bot chops the highest enabled tree you can use for your WC level. Enable only one for single-tree mode.",
         position = 0
     )
     String progressionSection = "progression";
 
-    @ConfigSection(name = "Travel", description = "::home → Gnome glider → destination, then start chopping", position = 1)
+    @ConfigSection(name = "Travel", description = "::home -> Gnome glider -> destination, then start chopping", position = 1)
     String travelSection = "travel";
 
     @ConfigSection(name = "Overlay", description = "On-screen AIO-style status (chatbox + inventory)", position = 2)
@@ -33,32 +33,32 @@ public interface WoodcuttingConfig extends Config {
 
     // --- Progression ---
 
-    @ConfigItem(keyName = "enableNormal", name = "Normal trees (lvl 1)", description = "Logs 1511 · trees 1276+", section = progressionSection, position = 0)
+    @ConfigItem(keyName = "enableNormal", name = "Normal trees (lvl 1)", description = "Logs 1511 | trees 1276+", section = progressionSection, position = 0)
     default boolean enableNormal() {
         return true;
     }
 
-    @ConfigItem(keyName = "enableOak", name = "Oaks (lvl 15)", description = "Oak logs 1521 · trees 10820/1281", section = progressionSection, position = 1)
+    @ConfigItem(keyName = "enableOak", name = "Oaks (lvl 15)", description = "Oak logs 1521 | trees 10820/1281", section = progressionSection, position = 1)
     default boolean enableOak() {
         return true;
     }
 
-    @ConfigItem(keyName = "enableWillow", name = "Willows (lvl 30)", description = "Willow logs 1519 · tree 1308", section = progressionSection, position = 2)
+    @ConfigItem(keyName = "enableWillow", name = "Willows (lvl 30)", description = "Willow logs 1519 | tree 1308", section = progressionSection, position = 2)
     default boolean enableWillow() {
         return true;
     }
 
-    @ConfigItem(keyName = "enableMaple", name = "Maples (lvl 45)", description = "Maple logs 1517 · tree 1307", section = progressionSection, position = 3)
+    @ConfigItem(keyName = "enableMaple", name = "Maples (lvl 45)", description = "Maple logs 1517 | tree 1307", section = progressionSection, position = 3)
     default boolean enableMaple() {
         return true;
     }
 
-    @ConfigItem(keyName = "enableYew", name = "Yews (lvl 60)", description = "Yew logs 1515 · tree 1309", section = progressionSection, position = 4)
+    @ConfigItem(keyName = "enableYew", name = "Yews (lvl 60)", description = "Yew logs 1515 | tree 1309", section = progressionSection, position = 4)
     default boolean enableYew() {
         return true;
     }
 
-    @ConfigItem(keyName = "enableMagic", name = "Magics (lvl 75)", description = "Magic logs 1513 · tree 47421", section = progressionSection, position = 5)
+    @ConfigItem(keyName = "enableMagic", name = "Magics (lvl 75)", description = "Magic logs 1513 | tree 47421", section = progressionSection, position = 5)
     default boolean enableMagic() {
         return true;
     }
@@ -68,7 +68,7 @@ public interface WoodcuttingConfig extends Config {
     @ConfigItem(
         keyName = "gliderTravel",
         name = "Start via glider",
-        description = "On login/start: ::home → walk to Gnome glider → teleport to destination, then chop",
+        description = "On login/start: ::home -> walk to Gnome glider -> teleport to destination, then chop",
         section = travelSection,
         position = 0
     )

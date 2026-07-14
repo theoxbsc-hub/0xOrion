@@ -4,7 +4,7 @@ import net.runelite.client.RuneLite;
 import net.runelite.client.plugins.ox.core.OxConsole;
 
 /**
- * Own launcher — same game client stack as the Orion/x64 jar,
+ * Own launcher - same game client stack as the Orion/x64 jar,
  * without the x64 licence dialog / entitlement gate.
  */
 public final class OxLauncher {

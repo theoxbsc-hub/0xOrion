@@ -227,20 +227,28 @@ def write_jvm_args(account: Dict[str, Any]) -> Path:
     return out
 
 
+def print_account_table(accounts: List[Dict[str, Any]], *, file=sys.stdout) -> None:
+    print(file=file)
+    print(f"  {'#':>2}  {'Name':<16}  {'User':<16}  {'Proxy':<14}  MAC", file=file)
+    print(f"  {'--':>2}  {'-'*16}  {'-'*16}  {'-'*14}  {'-'*17}", file=file)
+    for i, acc in enumerate(accounts, start=1):
+        proxy = (acc.get("proxy") or "").strip()
+        px = "DIRECT" if not proxy else proxy.split(":")[0]
+        mac = (acc.get("identity") or {}).get("mac", "")
+        print(
+            f"  {i:2d}  {(acc.get('displayName') or '')[:16]:<16}  "
+            f"{(acc.get('username') or '')[:16]:<16}  {px:<14}  {mac}",
+            file=file,
+        )
+    print(file=file)
+
+
 def cmd_list(_: List[str]) -> int:
     accounts = list_accounts()
     if not accounts:
         print("No accounts yet. Run: ./accounts.sh add")
         return 2
-    print()
-    print(f"  {'#':>2}  {'Name':<16}  {'User':<16}  {'Proxy':<14}  MAC")
-    print(f"  {'--':>2}  {'-'*16}  {'-'*16}  {'-'*14}  {'-'*17}")
-    for i, acc in enumerate(accounts, start=1):
-        proxy = (acc.get("proxy") or "").strip()
-        px = "DIRECT" if not proxy else proxy.split(":")[0]
-        mac = (acc.get("identity") or {}).get("mac", "")
-        print(f"  {i:2d}  {(acc.get('displayName') or '')[:16]:<16}  {(acc.get('username') or '')[:16]:<16}  {px:<14}  {mac}")
-    print()
+    print_account_table(accounts)
     return 0
 
 
@@ -312,14 +320,26 @@ def cmd_show(argv: List[str]) -> int:
 
 
 def cmd_prepare(argv: List[str]) -> int:
-    """Write jvm_args for account id or picker index; print id|proxy|displayName."""
+    """Write jvm_args for account id or picker index; print id|proxy|displayName.
+
+    UI goes to stderr so launchers can capture only the result line on stdout
+    without hiding the account picker (which looked like a hang after the banner).
+    """
     accounts = list_accounts()
     if not accounts:
         print("No accounts.", file=sys.stderr)
         return 2
     if not argv:
-        cmd_list([])
-        raw = input("Launch account # : ").strip()
+        # Single account → skip prompt
+        if len(accounts) == 1:
+            raw = "1"
+            print(f" Auto-selecting account: {accounts[0].get('displayName')}", file=sys.stderr)
+        else:
+            print_account_table(accounts, file=sys.stderr)
+            print("   0) Cancel", file=sys.stderr)
+            sys.stderr.write("  Launch account # : ")
+            sys.stderr.flush()
+            raw = sys.stdin.readline().strip()
     else:
         raw = argv[0]
     if not raw or raw == "0":

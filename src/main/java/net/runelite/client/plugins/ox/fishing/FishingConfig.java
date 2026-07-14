@@ -16,7 +16,7 @@ public interface FishingConfig extends Config {
 
     @ConfigSection(
         name = "Travel",
-        description = "When at home: ::home → Gnome glider → Seabright Pier",
+        description = "When at home: ::home -> Gnome glider -> Seabright Pier",
         position = 1
     )
     String travelSection = "travel";
@@ -28,11 +28,12 @@ public interface FishingConfig extends Config {
     String overlaySection = "overlay";
 
     // --- Progression ---
+    // Use ASCII-only labels (hyphen, not en-dash) so Mac RuneLite fonts don't show tofu boxes.
 
     @ConfigItem(
         keyName = "enableShrimp",
-        name = "Shrimps (lvl 1–39)",
-        description = "Spot 1514 · Small Net · fish 317 & 321",
+        name = "Shrimps (lvl 1-39)",
+        description = "Spot 1514 | Small Net | fish 317 & 321",
         section = progressionSection,
         position = 0
     )
@@ -42,8 +43,8 @@ public interface FishingConfig extends Config {
 
     @ConfigItem(
         keyName = "enableLobster",
-        name = "Lobsters (lvl 40–61)",
-        description = "Spot 1510 · Cage · fish 377",
+        name = "Lobsters (lvl 40-61)",
+        description = "Spot 1510 | Cage | fish 377",
         section = progressionSection,
         position = 1
     )
@@ -53,8 +54,8 @@ public interface FishingConfig extends Config {
 
     @ConfigItem(
         keyName = "enableMonkfish",
-        name = "Monkfish (lvl 62–74)",
-        description = "Spot 4316 · Net · fish 7944",
+        name = "Monkfish (lvl 62-74)",
+        description = "Spot 4316 | Net | fish 7944",
         section = progressionSection,
         position = 2
     )
@@ -64,8 +65,8 @@ public interface FishingConfig extends Config {
 
     @ConfigItem(
         keyName = "enableShark",
-        name = "Sharks (lvl 75–81)",
-        description = "Spot 1511 · Harpoon · fish 383",
+        name = "Sharks (lvl 75-81)",
+        description = "Spot 1511 | Harpoon | fish 383",
         section = progressionSection,
         position = 3
     )
@@ -75,8 +76,8 @@ public interface FishingConfig extends Config {
 
     @ConfigItem(
         keyName = "enableAngler",
-        name = "Anglers (lvl 82–99)",
-        description = "Spot 6825 · Bait · fish 13439",
+        name = "Anglers (lvl 82-99)",
+        description = "Spot 6825 | Bait | fish 13439",
         section = progressionSection,
         position = 4
     )
@@ -89,7 +90,7 @@ public interface FishingConfig extends Config {
     @ConfigItem(
         keyName = "gliderTravel",
         name = "Start via glider",
-        description = "If at home (or far from pier): ::home → glider → destination, then fish",
+        description = "If at home (or far from pier): ::home -> glider -> destination, then fish",
         section = travelSection,
         position = 0
     )

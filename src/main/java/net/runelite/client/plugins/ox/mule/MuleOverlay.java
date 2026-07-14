@@ -114,8 +114,8 @@ class MuleOverlay extends Overlay {
     }
 
     private static String shortLabel(String label) {
-        if (label == null || label.isEmpty() || "—".equals(label) || "n/a".equalsIgnoreCase(label)) {
-            return "—";
+        if (label == null || label.isEmpty() || "-".equals(label) || "n/a".equalsIgnoreCase(label)) {
+            return "-";
         }
         return label.length() > 8 ? label.substring(0, 8) : label;
     }

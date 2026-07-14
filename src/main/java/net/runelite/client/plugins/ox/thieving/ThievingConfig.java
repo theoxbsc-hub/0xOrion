@@ -11,7 +11,7 @@ import net.runelite.client.config.Units;
 public interface ThievingConfig extends Config {
     @ConfigSection(
         name = "Progression",
-        description = "Enable stalls lowest→highest. Bot steals until Thieving reaches the next enabled stall, then sells and walks there. Enable one for single-stall mode.",
+        description = "Enable stalls lowest->highest. Bot steals until Thieving reaches the next enabled stall, then sells and walks there. Enable one for single-stall mode.",
         position = 0
     )
     String progressionSection = "progression";
