@@ -292,6 +292,13 @@ public class OxInfoPanel extends PluginPanel {
                 details.add(statLine("Fish banked", String.valueOf(session.itemsGathered), VALUE), c);
                 c.gridy = row++;
                 details.add(statLine("Tier", blankDash(session.tree), VALUE), c);
+            } else if (kind == ScriptKind.COOKING) {
+                c.gridy = row++;
+                details.add(statLine("Trips", String.valueOf(session.bankTrips), VALUE), c);
+                c.gridy = row++;
+                details.add(statLine("Cooked ~", String.valueOf(session.itemsGathered), VALUE), c);
+                c.gridy = row++;
+                details.add(statLine("Fish", blankDash(session.tree), VALUE), c);
             } else if (kind == ScriptKind.SMITHING) {
                 c.gridy = row++;
                 details.add(statLine("Bars smelted", String.valueOf(session.barsSmelted), VALUE), c);
@@ -422,6 +429,13 @@ public class OxInfoPanel extends PluginPanel {
             if (session.itemsGathered > 0) {
                 sb.append(" | fish ").append(session.itemsGathered);
             }
+        } else if (kind == ScriptKind.COOKING) {
+            if (session.bankTrips > 0) {
+                sb.append(" | trips ").append(session.bankTrips);
+            }
+            if (session.itemsGathered > 0) {
+                sb.append(" | cooked ").append(session.itemsGathered);
+            }
         } else if (kind == ScriptKind.SMITHING) {
             if (session.barsSmelted > 0) {
                 sb.append(" | bars ").append(session.barsSmelted);
@@ -455,6 +469,7 @@ public class OxInfoPanel extends PluginPanel {
         THIEVE,
         MINING,
         FISHING,
+        COOKING,
         SMITHING,
         MULE,
         OTHER
@@ -476,6 +491,9 @@ public class OxInfoPanel extends PluginPanel {
         }
         if (s.contains("fish")) {
             return ScriptKind.FISHING;
+        }
+        if (s.contains("cook")) {
+            return ScriptKind.COOKING;
         }
         if (s.contains("smith")) {
             return ScriptKind.SMITHING;
