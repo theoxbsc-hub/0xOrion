@@ -1,5 +1,6 @@
 package net.runelite.client.plugins.ox.woodcutting;
 
+import java.util.Random;
 import net.runelite.api.Player;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.WorldPoint;
@@ -7,11 +8,13 @@ import net.unethicalite.api.entities.TileObjects;
 import net.unethicalite.api.input.Keyboard;
 import net.unethicalite.api.input.Mouse;
 import net.unethicalite.api.movement.Movement;
+import net.unethicalite.api.packets.MousePackets;
+import net.unethicalite.api.packets.MovementPackets;
 import net.unethicalite.api.widgets.Dialog;
 
 /**
- * Startup path: ::home → walk Gnome glider → Travel → search Foresters Grove → chop site.
- * Same UI flow x64 uses for glider search destinations.
+ * Startup path: ::home (if far) → walk Gnome glider → Travel → search destination.
+ * Walking matches x64 AIO/Slayer packet-step style (not Walker walkTo).
  */
 final class WcGliderTravel {
     static final WorldPoint GLIDER_TILE = new WorldPoint(2795, 3374, 0);
@@ -19,18 +22,29 @@ final class WcGliderTravel {
     static final String GLIDER_NAME = "Gnome glider";
     static final String DEFAULT_DEST = "Foresters Grove";
 
-    private Phase phase = Phase.HOME;
+    private static final int ARRIVE_DIST = 5;
+    private static final int HOME_IF_FARTHER_THAN = 60;
+    private static final int STEP_TILES = 8;
+
+    private final Random rng = new Random();
+    private Phase phase = Phase.WALK;
     private long phaseAtMs = 0L;
     private WorldPoint preClickPos;
+    private WorldPoint lastWalkFrom;
+    private WorldPoint lastIssuedWaypoint;
     private int homeAttempts = 0;
+    private int walkStallCount = 0;
     private String status = "Travel: starting";
 
     void begin() {
-        this.phase = Phase.HOME;
+        this.phase = Phase.WALK;
         this.phaseAtMs = System.currentTimeMillis();
         this.preClickPos = null;
+        this.lastWalkFrom = null;
+        this.lastIssuedWaypoint = null;
         this.homeAttempts = 0;
-        this.status = "Travel: ::home";
+        this.walkStallCount = 0;
+        this.status = "Travel: starting";
     }
 
     String status() {
@@ -54,61 +68,56 @@ final class WcGliderTravel {
         String dest = destination == null || destination.trim().isEmpty() ? DEFAULT_DEST : destination.trim();
 
         switch (this.phase) {
-            case HOME: {
-                if (here.distanceTo(GLIDER_TILE) <= 8) {
-                    this.phase = Phase.WALK;
-                    this.phaseAtMs = now;
-                    this.status = "Travel: near glider";
-                    return 300;
-                }
-                if (here.distanceTo(HOME_CENTER) <= 25 || here.distanceTo(GLIDER_TILE) <= 60) {
-                    this.phase = Phase.WALK;
-                    this.phaseAtMs = now;
-                    return 300;
-                }
-                if (this.homeAttempts >= 4) {
-                    this.status = "Travel: ::home failed — walking anyway";
-                    this.phase = Phase.WALK;
-                    return 800;
-                }
-                ++this.homeAttempts;
-                this.status = "Travel: ::home (attempt " + this.homeAttempts + ")";
-                typeCommand("::home");
-                this.phaseAtMs = now;
-                return 10000;
-            }
             case WALK: {
-                if (here.distanceTo(GLIDER_TILE) > 4) {
-                    if (here.distanceTo(GLIDER_TILE) > 60 && this.homeAttempts < 4) {
-                        this.phase = Phase.HOME;
-                        this.status = "Travel: too far — ::home again";
-                        return 300;
-                    }
-                    this.status = "Travel: walking to glider";
-                    Movement.walkTo(GLIDER_TILE);
-                    return 1200;
+                TileObject visible = findGlider();
+                if (here.distanceTo(GLIDER_TILE) <= ARRIVE_DIST
+                    || (visible != null && visible.getWorldLocation() != null
+                        && here.distanceTo(visible.getWorldLocation()) <= ARRIVE_DIST)) {
+                    this.homeAttempts = 0;
+                    this.walkStallCount = 0;
+                    this.phase = Phase.TRAVEL;
+                    this.phaseAtMs = now;
+                    this.status = "Travel: at glider";
+                    return 300;
                 }
-                this.homeAttempts = 0;
-                this.phase = Phase.TRAVEL;
-                this.phaseAtMs = now;
-                this.status = "Travel: at glider";
-                return 300;
+
+                if (here.distanceTo(GLIDER_TILE) > HOME_IF_FARTHER_THAN && this.homeAttempts < 4) {
+                    this.status = "Travel: ::home to reach glider (" + (this.homeAttempts + 1) + ")";
+                    typeCommand("::home");
+                    ++this.homeAttempts;
+                    this.lastWalkFrom = null;
+                    this.walkStallCount = 0;
+                    return 10000;
+                }
+
+                maybeEnableRun();
+                this.status = "Travel: walking to glider (" + here.distanceTo(GLIDER_TILE) + " tiles)";
+                walkToward(here, GLIDER_TILE);
+                return 1200;
             }
             case TRAVEL: {
                 TileObject glider = findGlider();
                 if (glider != null) {
                     this.status = "Travel: clicking Travel";
-                    glider.interact("Travel");
+                    MousePackets.queueClickPacket();
+                    if (!safeInteract(glider, "Travel") && !safeInteract(glider, "Glider")) {
+                        glider.interact("Travel");
+                    }
                     this.phase = Phase.SEARCH;
                     this.phaseAtMs = now;
                     return 6000;
+                }
+                if (here.distanceTo(GLIDER_TILE) > 2) {
+                    this.status = "Travel: walking onto glider tile";
+                    walkToward(here, GLIDER_TILE);
+                    return 1000;
                 }
                 this.status = "Travel: looking for Gnome glider";
                 return 800;
             }
             case SEARCH: {
                 this.status = "Travel: opening search";
-                Mouse.click(75, 305, true);
+                Mouse.click(75, 305, false);
                 this.phase = Phase.TYPE;
                 this.phaseAtMs = now;
                 return 3000;
@@ -123,7 +132,7 @@ final class WcGliderTravel {
             case SELECT: {
                 this.preClickPos = here;
                 this.status = "Travel: selecting destination";
-                Mouse.click(220, 90, true);
+                Mouse.click(220, 90, false);
                 this.phase = Phase.VERIFY;
                 this.phaseAtMs = now;
                 return 1500;
@@ -139,11 +148,11 @@ final class WcGliderTravel {
                 }
                 if (this.preClickPos != null && here.distanceTo(this.preClickPos) > 15) {
                     this.status = "Travel: arrived at " + dest;
-                    this.phase = Phase.HOME;
+                    this.phase = Phase.WALK;
                     this.preClickPos = null;
                     return Integer.MIN_VALUE;
                 }
-                if (now - this.phaseAtMs > 8000L) {
+                if (now - this.phaseAtMs > 6000L) {
                     this.status = "Travel: teleport timeout — retry";
                     this.phase = Phase.TRAVEL;
                     this.phaseAtMs = now;
@@ -157,8 +166,112 @@ final class WcGliderTravel {
         }
     }
 
+    private void walkToward(WorldPoint from, WorldPoint to) {
+        if (from == null || to == null) {
+            return;
+        }
+        if (to.equals(this.lastIssuedWaypoint)
+            && this.lastWalkFrom != null
+            && !from.equals(this.lastWalkFrom)
+            && from.getPlane() == this.lastIssuedWaypoint.getPlane()
+            && from.distanceTo(this.lastIssuedWaypoint) > 2) {
+            this.walkStallCount = 0;
+            this.lastWalkFrom = from;
+            return;
+        }
+
+        if (from.equals(this.lastWalkFrom) && to.equals(GLIDER_TILE)) {
+            ++this.walkStallCount;
+        } else {
+            this.walkStallCount = 0;
+        }
+        this.lastWalkFrom = from;
+
+        WorldPoint waypoint = nextWaypoint(from, to);
+        this.lastIssuedWaypoint = waypoint;
+
+        try {
+            MousePackets.queueClickPacket();
+            MovementPackets.sendMovement(waypoint);
+        } catch (Throwable ignored) {
+            // best-effort
+        }
+
+        if (this.walkStallCount >= 4) {
+            this.walkStallCount = 0;
+            try {
+                MousePackets.queueClickPacket();
+                MovementPackets.sendMovement(to);
+            } catch (Throwable ignored) {
+                // ignore
+            }
+        }
+    }
+
+    private WorldPoint nextWaypoint(WorldPoint from, WorldPoint to) {
+        int dx = to.getX() - from.getX();
+        int dy = to.getY() - from.getY();
+        int chebyshev = Math.max(Math.abs(dx), Math.abs(dy));
+        int step = STEP_TILES + this.rng.nextInt(4);
+        if (chebyshev <= step) {
+            int jx = to.getX() + (this.rng.nextInt(3) - 1);
+            int jy = to.getY() + (this.rng.nextInt(3) - 1);
+            return new WorldPoint(jx, jy, from.getPlane());
+        }
+        int nx = from.getX() + Integer.signum(dx) * Math.min(Math.abs(dx), step);
+        int ny = from.getY() + Integer.signum(dy) * Math.min(Math.abs(dy), step);
+        int drift = this.rng.nextInt(5) - 2;
+        if (Math.abs(dx) >= Math.abs(dy)) {
+            ny += drift;
+        } else {
+            nx += drift;
+        }
+        return new WorldPoint(nx, ny, from.getPlane());
+    }
+
+    private static void maybeEnableRun() {
+        try {
+            if (Movement.getRunEnergy() > 20 && !Movement.isRunEnabled()) {
+                Movement.toggleRun();
+            }
+        } catch (Throwable ignored) {
+            // optional
+        }
+    }
+
+    private static boolean safeInteract(TileObject obj, String action) {
+        try {
+            String[] actions = obj.getActions();
+            if (actions != null) {
+                for (String a : actions) {
+                    if (a != null && a.equalsIgnoreCase(action)) {
+                        obj.interact(action);
+                        return true;
+                    }
+                }
+                for (String a : actions) {
+                    if (a != null && a.toLowerCase().contains(action.toLowerCase())) {
+                        obj.interact(a);
+                        return true;
+                    }
+                }
+            }
+            obj.interact(action);
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     private static TileObject findGlider() {
         TileObject byName = TileObjects.getNearest(GLIDER_NAME);
+        if (byName != null) {
+            return byName;
+        }
+        byName = TileObjects.getNearest(obj ->
+            obj != null
+                && obj.getName() != null
+                && obj.getName().toLowerCase().contains("glider"));
         if (byName != null) {
             return byName;
         }
@@ -185,7 +298,6 @@ final class WcGliderTravel {
     }
 
     private enum Phase {
-        HOME,
         WALK,
         TRAVEL,
         SEARCH,
