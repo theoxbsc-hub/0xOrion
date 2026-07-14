@@ -1,0 +1,13 @@
+build/
+dist/*.jar
+dist/ox-incognito-agent*.jar
+lib/
+*.class
+.idea/
+.vscode/
+*.log
+.oxrl./
+accounts/
+*.json.bak
+tools/ox-agent/out/*.jar
+tools/ox-agent/stage/*.jar
