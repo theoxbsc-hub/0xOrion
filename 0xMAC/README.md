@@ -6,32 +6,19 @@ This folder is **Mac-only wrappers**. When launch/account behaviour changes, upd
 ## Quick start (clone → play)
 
 ```bash
-git clone git@github.com:theoxbsc-hub/0xOrion.git
+git clone https://github.com/theoxbsc-hub/0xOrion.git
 cd 0xOrion/0xMAC
 chmod +x *.sh *.command
+brew install --cask temurin@11   # JDK 11+
+./add-account.sh                 # GUI — or double-click add-account.command
+./launch-0x.sh                   # pick account #
 ```
 
-1. **JDK 11+**  
-   `brew install --cask temurin@11`
-2. **Python 3** with Tk (for the Account Manager GUI)  
-   macOS usually has `python3`; if the GUI fails:  
-   `brew install python-tk`  or  `brew install python-tk@3.12`
-3. **Jars** — copy from a Windows build into `../dist/`:
-   - `0x-client.jar`
-   - `ox-incognito-agent.jar`  
-   Or build the agent on Mac: `./build-agent.sh` (downloads ASM if needed).  
-   Full client patches still run best via Windows `build.ps1`.
-4. **Accounts (GUI)**  
-   `./add-account.sh`  
-   or double-click `add-account.command`  
-   (CLI: `./add-account.sh --cli`  or  `./accounts.sh list|add|…`)
-5. **Launch**  
-   `./launch-0x.sh`  
-   or double-click `launch-0x.command`  
-   Pick the account number → client starts with that proxy + MAC spoof.
+`../dist/0x-client.jar` and `../dist/ox-incognito-agent.jar` ship in the repo — no copy step.
 
-Accounts use the **same JSON path as Windows**: `~/.oxrl./accounts/*.json`.  
-Create accounts on the Mac so identities are Mac-flavoured (`Mac OS X`, MacBook hostnames, etc.).
+If the account GUI fails to open (missing Tk): `brew install python-tk` then retry, or `./add-account.sh --cli`.
+
+Accounts: `~/.oxrl./accounts/*.json` (create them on the Mac so identities are Mac-flavoured).
 
 ## Scripts
 

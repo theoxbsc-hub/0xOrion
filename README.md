@@ -6,16 +6,11 @@ Personal fork of the same private-server RuneLite/OpenOSRS stack used by the Ori
 - **Our** plugins under `net.runelite.client.plugins.ox.*` (starts with **0xWCBot**)
 - Separate config home: `%USERPROFILE%\.oxrl.` (so it does not fight `%USERPROFILE%\.orion`)
 
-## Build
+## Launch (jars are in the repo)
 
-```powershell
-cd $env:USERPROFILE\Desktop\0x-client
-.\build.ps1
-```
+`dist/0x-client.jar` and `dist/ox-incognito-agent.jar` are tracked — after clone you can run without building.
 
-Requires JDK 11+ (`javac`) and the vendor jar at `Desktop\Orion x64\client_patched.jar` as the game-client base.
-
-Output: `dist\0x-client.jar` + `dist\Launch-0x.bat` (+ incognito agent if present).
+Rebuild only when you change plugins (`.\build.ps1` needs the Orion vendor jar).
 
 ## Accounts (proxy + MAC isolation)
 
@@ -37,14 +32,22 @@ Data: `%USERPROFILE%\.oxrl.\accounts\` · cache: `%USERPROFILE%\.oxrl.\account-c
 
 ## macOS (`0xMAC/`)
 
-Same jars and account JSON; Mac wrappers live under `0xMAC/`.
-
-1. Copy `dist/0x-client.jar` + `dist/ox-incognito-agent.jar` (or `./build-agent.sh` on Mac for the agent)
+1. Clone this repo (jars already in `dist/`)
 2. `cd 0xMAC && chmod +x *.sh *.command`
-3. **Accounts GUI:** `./add-account.sh` (or double-click `add-account.command`) — same job as Windows `Add-Account.bat`
-4. **Launch:** `./launch-0x.sh` (or `launch-0x.command`)
+3. **Accounts GUI:** `./add-account.sh`
+4. **Launch:** `./launch-0x.sh`
 
-See [0xMAC/README.md](0xMAC/README.md) for the full clone → test walkthrough. Dual-maintain launch/identity with Windows when those change; plugins stay shared in `src/`.
+Needs JDK 11+ (`brew install --cask temurin@11`) and Python 3 + Tk for the account GUI.
+
+See [0xMAC/README.md](0xMAC/README.md).
+
+## Rebuild (Windows, optional)
+
+```powershell
+.\build.ps1
+```
+
+Needs JDK 11+ and `Desktop\Orion x64\client_patched.jar`. Then commit updated `dist/*.jar` if you want Mac clones to get the new build.
 
 ## Add more plugins
 

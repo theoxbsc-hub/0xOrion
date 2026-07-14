@@ -1,6 +1,10 @@
 build/
-dist/*.jar
-dist/ox-incognito-agent*.jar
+# Ignore build leftovers in dist/, but keep the shipping jars in git for clone→run
+dist/*
+!dist/0x-client.jar
+!dist/ox-incognito-agent.jar
+!dist/*.bat
+!dist/*.md
 /lib/
 *.class
 __pycache__/
