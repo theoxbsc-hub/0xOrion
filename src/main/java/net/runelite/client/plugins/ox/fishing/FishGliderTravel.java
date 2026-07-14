@@ -1,13 +1,11 @@
 package net.runelite.client.plugins.ox.fishing;
 
-import java.awt.Rectangle;
 import java.util.Locale;
 import java.util.Random;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.widgets.Widget;
 import net.runelite.client.RuneLite;
 import net.unethicalite.api.entities.TileObjects;
 import net.unethicalite.api.input.Keyboard;
@@ -20,9 +18,13 @@ import net.unethicalite.api.widgets.Dialog;
 /**
  * Startup path when at home: ::home (if far) -> walk Gnome glider -> Travel -> search dest.
  * <p>
- * Search/select mirrors x64 Slayer / {@code GliderTeleporter} coords, but prefers widgets and
- * {@link Dialog#enterText(String)} so we never dump the destination into chat (common Mac fail
- * when fixed canvas clicks miss Search and {@code Keyboard.type} hits the chatbox).
+ * Search/select match x64 Slayer / {@code GliderTeleporter}:
+ * left-click Search @ 75,305 -> type query (Keyboard, like {@code HumanInput.command})
+ * -> left-click result @ 220,90 -> confirm dialog.
+ * <p>
+ * Coordinates are scaled from the classic 765x503 canvas so Mac / stretched clients work.
+ * Do NOT gate on {@link Dialog#isEnterInputOpen()} — Orion glider search is not that dialog
+ * (that gate caused an infinite "clicking Search widget" loop).
  */
 final class FishGliderTravel {
     static final WorldPoint GLIDER_TILE = new WorldPoint(2795, 3374, 0);
@@ -30,13 +32,17 @@ final class FishGliderTravel {
     static final String GLIDER_NAME = "Gnome glider";
     static final String DEFAULT_DEST = "seabright pier";
 
-    private static final int ARRIVE_DIST = 5;
-    private static final int HOME_IF_FARTHER_THAN = 60;
-    private static final int STEP_TILES = 8;
+    /** Classic fixed-mode canvas used by x64 hardcoded click coords. */
+    private static final int BASE_CANVAS_W = 765;
+    private static final int BASE_CANVAS_H = 503;
     private static final int SEARCH_BTN_X = 75;
     private static final int SEARCH_BTN_Y = 305;
     private static final int SELECT_BTN_X = 220;
     private static final int SELECT_BTN_Y = 90;
+
+    private static final int ARRIVE_DIST = 5;
+    private static final int HOME_IF_FARTHER_THAN = 60;
+    private static final int STEP_TILES = 8;
 
     private final Random rng = new Random();
     private Phase phase = Phase.WALK;
@@ -46,7 +52,7 @@ final class FishGliderTravel {
     private WorldPoint lastIssuedWaypoint;
     private int homeAttempts = 0;
     private int walkStallCount = 0;
-    private int searchMisses = 0;
+    private int cycleAttempts = 0;
     private boolean clearedChatBeforeTravel = false;
     private String status = "Travel: starting";
 
@@ -58,7 +64,7 @@ final class FishGliderTravel {
         this.lastIssuedWaypoint = null;
         this.homeAttempts = 0;
         this.walkStallCount = 0;
-        this.searchMisses = 0;
+        this.cycleAttempts = 0;
         this.clearedChatBeforeTravel = false;
         this.status = "Travel: starting";
     }
@@ -95,7 +101,7 @@ final class FishGliderTravel {
 
                 if (here.distanceTo(GLIDER_TILE) > HOME_IF_FARTHER_THAN && this.homeAttempts < 4) {
                     this.status = "Travel: ::home to reach glider (" + (this.homeAttempts + 1) + ")";
-                    typeChatCommand("::home");
+                    typeCommand("::home");
                     this.clearedChatBeforeTravel = false;
                     ++this.homeAttempts;
                     this.lastWalkFrom = null;
@@ -109,11 +115,10 @@ final class FishGliderTravel {
                 return 1200;
             }
             case TRAVEL: {
-                // ::home leaves chat focused — clear once before interacting with glider UI
                 if (!this.clearedChatBeforeTravel) {
                     this.clearedChatBeforeTravel = true;
                     pressEscape();
-                    this.status = "Travel: closing chat before glider";
+                    this.status = "Travel: clearing chat focus";
                     return 400;
                 }
                 TileObject glider = findGlider();
@@ -123,7 +128,6 @@ final class FishGliderTravel {
                     if (!safeInteract(glider, "Travel") && !safeInteract(glider, "Glider")) {
                         glider.interact("Travel");
                     }
-                    this.searchMisses = 0;
                     this.phase = Phase.SEARCH;
                     this.phaseAtMs = now;
                     return 6000;
@@ -137,77 +141,27 @@ final class FishGliderTravel {
                 return 800;
             }
             case SEARCH: {
-                // Already ready? (Moons / some builds open enter-input after Travel)
-                if (Dialog.isEnterInputOpen()) {
-                    this.status = "Travel: search input already open";
-                    this.phase = Phase.TYPE;
-                    this.phaseAtMs = now;
-                    return 300;
-                }
-
-                Widget search = findVisibleWidget("Search", true);
-                if (search != null) {
-                    this.status = "Travel: clicking Search widget";
-                    clickWidget(search);
-                } else {
-                    // x64 Slayer fallback coords — Mac canvas / scaling often misses these
-                    this.status = "Travel: clicking Search @ " + SEARCH_BTN_X + "," + SEARCH_BTN_Y;
-                    Mouse.click(SEARCH_BTN_X, SEARCH_BTN_Y, true);
-                }
+                // x64 Slayer: fixed left-click Search — no widget scan (false positives loop forever)
+                int[] xy = scaleClick(SEARCH_BTN_X, SEARCH_BTN_Y);
+                this.status = "Travel: Search click @ " + xy[0] + "," + xy[1];
+                Mouse.click(xy[0], xy[1], true);
                 this.phase = Phase.TYPE;
                 this.phaseAtMs = now;
                 return 3000;
             }
             case TYPE: {
-                if (!Dialog.isEnterInputOpen()) {
-                    ++this.searchMisses;
-                    if (this.searchMisses >= 4) {
-                        this.searchMisses = 0;
-                        this.phase = Phase.TRAVEL;
-                        this.clearedChatBeforeTravel = true;
-                        this.status = "Travel: search input missing - reopen Travel";
-                        return 600;
-                    }
-                    this.phase = Phase.SEARCH;
-                    this.status = "Travel: waiting for search input (not typing into chat)";
-                    return 800;
-                }
-
-                this.searchMisses = 0;
-                this.status = "Travel: typing '" + dest + "' into search";
-                // Moons/x64-correct: enter-input packet, NEVER Keyboard.type (that hits chat)
-                try {
-                    Dialog.enterText(dest);
-                } catch (Throwable t) {
-                    try {
-                        Dialog.enterName(dest);
-                    } catch (Throwable ignored) {
-                        // last resort only when enter-input is open
-                        typeIntoFocusedField(dest);
-                    }
-                }
+                // x64 HumanInput.command: type into whatever Search focused (NOT Dialog.enterText)
+                this.status = "Travel: typing '" + dest + "'";
+                typeCommand(dest);
                 this.phase = Phase.SELECT;
                 this.phaseAtMs = now;
-                return 1500;
+                return 1200;
             }
             case SELECT: {
                 this.preClickPos = here;
-                Widget result = findDestinationResult(dest);
-                if (result != null) {
-                    this.status = "Travel: clicking result '" + stripTags(result.getText()) + "'";
-                    clickWidget(result);
-                } else if (Dialog.isViewingOptions()) {
-                    this.status = "Travel: choosing dialog option";
-                    if (!Dialog.chooseOption(dest)
-                        && !Dialog.chooseOption("Seabright Pier")
-                        && !Dialog.chooseOption("Yes, take me there")
-                        && !Dialog.chooseOption("Yes")) {
-                        Dialog.chooseOption(1);
-                    }
-                } else {
-                    this.status = "Travel: selecting result @ " + SELECT_BTN_X + "," + SELECT_BTN_Y;
-                    Mouse.click(SELECT_BTN_X, SELECT_BTN_Y, true);
-                }
+                int[] xy = scaleClick(SELECT_BTN_X, SELECT_BTN_Y);
+                this.status = "Travel: select result @ " + xy[0] + "," + xy[1];
+                Mouse.click(xy[0], xy[1], true);
                 this.phase = Phase.VERIFY;
                 this.phaseAtMs = now;
                 return 1500;
@@ -227,8 +181,9 @@ final class FishGliderTravel {
                     this.preClickPos = null;
                     return Integer.MIN_VALUE;
                 }
-                if (now - this.phaseAtMs > 8000L) {
-                    this.status = "Travel: teleport timeout - retry";
+                if (now - this.phaseAtMs > 6000L) {
+                    ++this.cycleAttempts;
+                    this.status = "Travel: teleport timeout - retry (" + this.cycleAttempts + ")";
                     this.phase = Phase.TRAVEL;
                     this.clearedChatBeforeTravel = true;
                     this.phaseAtMs = now;
@@ -240,6 +195,30 @@ final class FishGliderTravel {
             default:
                 return 600;
         }
+    }
+
+    /**
+     * Scale x64 fixed-mode coords to the live canvas (Mac / stretched clients).
+     */
+    private static int[] scaleClick(int baseX, int baseY) {
+        Client client = clientOrNull();
+        int canvasW = BASE_CANVAS_W;
+        int canvasH = BASE_CANVAS_H;
+        if (client != null) {
+            try {
+                int w = client.getCanvasWidth();
+                int h = client.getCanvasHeight();
+                if (w > 0 && h > 0) {
+                    canvasW = w;
+                    canvasH = h;
+                }
+            } catch (Throwable ignored) {
+                // keep defaults
+            }
+        }
+        int x = (int) Math.round(baseX * (canvasW / (double) BASE_CANVAS_W));
+        int y = (int) Math.round(baseY * (canvasH / (double) BASE_CANVAS_H));
+        return new int[] {x, y};
     }
 
     private void walkToward(WorldPoint from, WorldPoint to) {
@@ -358,23 +337,8 @@ final class FishGliderTravel {
         );
     }
 
-    /** Chat command only (::home). Destination search must NOT use this. */
-    private static void typeChatCommand(String text) {
-        try {
-            Keyboard.type(text, true);
-        } catch (Throwable t) {
-            try {
-                for (int i = 0; i < text.length(); i++) {
-                    Keyboard.type(text.charAt(i));
-                }
-                Keyboard.sendEnter();
-            } catch (Throwable ignored) {
-                // best-effort
-            }
-        }
-    }
-
-    private static void typeIntoFocusedField(String text) {
+    /** Same as x64 HumanInput.command: char-by-char then Enter. */
+    private static void typeCommand(String text) {
         if (text == null || text.isEmpty()) {
             return;
         }
@@ -383,185 +347,21 @@ final class FishGliderTravel {
                 Keyboard.type(text.charAt(i));
             }
             Keyboard.sendEnter();
-        } catch (Throwable ignored) {
-            // best-effort
+        } catch (Throwable t) {
+            try {
+                Keyboard.type(text, true);
+            } catch (Throwable ignored) {
+                // best-effort
+            }
         }
     }
 
     private static void pressEscape() {
         try {
-            Keyboard.typed(27); // VK_ESCAPE — closes chat without Keyboard.type into chat
+            Keyboard.typed(27);
         } catch (Throwable ignored) {
             // optional
         }
-    }
-
-    private static void clickWidget(Widget widget) {
-        if (widget == null) {
-            return;
-        }
-        try {
-            if (widget.hasAction("Search")) {
-                widget.interact("Search");
-                return;
-            }
-            String[] actions = widget.getActions();
-            if (actions != null) {
-                for (String a : actions) {
-                    if (a != null && !a.isEmpty()) {
-                        widget.interact(a);
-                        return;
-                    }
-                }
-            }
-        } catch (Throwable ignored) {
-            // fall through to canvas click
-        }
-        try {
-            Rectangle bounds = widget.getBounds();
-            if (bounds != null && bounds.width > 0 && bounds.height > 0) {
-                Mouse.click(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2, true);
-                return;
-            }
-        } catch (Throwable ignored) {
-            // ignore
-        }
-        try {
-            widget.interact(0);
-        } catch (Throwable ignored) {
-            // ignore
-        }
-    }
-
-    private static Widget findDestinationResult(String dest) {
-        String needle = normalize(dest);
-        if (needle.isEmpty()) {
-            return null;
-        }
-        Widget exact = findVisibleWidget(dest, false);
-        if (exact != null) {
-            return exact;
-        }
-        Client client = clientOrNull();
-        if (client == null) {
-            return null;
-        }
-        Widget[][] roots = client.getWidgets();
-        if (roots == null) {
-            return null;
-        }
-        Widget best = null;
-        int bestScore = Integer.MAX_VALUE;
-        for (Widget[] group : roots) {
-            if (group == null) {
-                continue;
-            }
-            for (Widget w : group) {
-                best = pickBetterMatch(w, needle, best, bestScore);
-                if (best != null) {
-                    bestScore = normalize(stripTags(best.getText())).length();
-                }
-                if (w == null) {
-                    continue;
-                }
-                Widget[] kids = w.getChildren();
-                if (kids == null) {
-                    continue;
-                }
-                for (Widget kid : kids) {
-                    Widget prev = best;
-                    best = pickBetterMatch(kid, needle, best, bestScore);
-                    if (best != null && best != prev) {
-                        bestScore = normalize(stripTags(best.getText())).length();
-                    }
-                }
-            }
-        }
-        return best;
-    }
-
-    private static Widget pickBetterMatch(Widget w, String needle, Widget best, int bestScore) {
-        if (w == null || w.isHidden()) {
-            return best;
-        }
-        String text = normalize(stripTags(w.getText()));
-        if (text.isEmpty()) {
-            return best;
-        }
-        if (!(text.contains(needle) || needle.contains(text))) {
-            return best;
-        }
-        if (best == null || text.length() < bestScore) {
-            return w;
-        }
-        return best;
-    }
-
-    private static Widget findVisibleWidget(String want, boolean alsoAction) {
-        Client client = clientOrNull();
-        if (client == null || want == null || want.isEmpty()) {
-            return null;
-        }
-        Widget[][] roots = client.getWidgets();
-        if (roots == null) {
-            return null;
-        }
-        String wantNorm = normalize(want);
-        for (Widget[] group : roots) {
-            if (group == null) {
-                continue;
-            }
-            for (Widget w : group) {
-                Widget hit = matchWidget(w, want, wantNorm, alsoAction);
-                if (hit != null) {
-                    return hit;
-                }
-                if (w == null) {
-                    continue;
-                }
-                Widget[] kids = w.getChildren();
-                if (kids == null) {
-                    continue;
-                }
-                for (Widget kid : kids) {
-                    hit = matchWidget(kid, want, wantNorm, alsoAction);
-                    if (hit != null) {
-                        return hit;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    private static Widget matchWidget(Widget w, String want, String wantNorm, boolean alsoAction) {
-        if (w == null || w.isHidden()) {
-            return null;
-        }
-        String text = stripTags(w.getText());
-        if (text != null && !text.isEmpty()) {
-            if (want.equalsIgnoreCase(text) || normalize(text).equals(wantNorm)) {
-                return w;
-            }
-        }
-        if (alsoAction) {
-            try {
-                if (w.hasAction(want)) {
-                    return w;
-                }
-                String[] actions = w.getActions();
-                if (actions != null) {
-                    for (String a : actions) {
-                        if (a != null && a.equalsIgnoreCase(want)) {
-                            return w;
-                        }
-                    }
-                }
-            } catch (Throwable ignored) {
-                // ignore
-            }
-        }
-        return null;
     }
 
     private static Client clientOrNull() {
@@ -570,17 +370,6 @@ final class FishGliderTravel {
         } catch (Throwable t) {
             return null;
         }
-    }
-
-    private static String stripTags(String text) {
-        if (text == null) {
-            return "";
-        }
-        return text.replaceAll("<[^>]*>", "").trim();
-    }
-
-    private static String normalize(String text) {
-        return stripTags(text).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]+", "");
     }
 
     private enum Phase {
