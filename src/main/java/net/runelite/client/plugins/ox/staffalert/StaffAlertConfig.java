@@ -251,7 +251,7 @@ public interface StaffAlertConfig extends Config {
     @ConfigItem(
         keyName = "showOverlay",
         name = "Show overlay",
-        description = "Status + nearby players",
+        description = "Slim status bar on the chatbox (ARMED / GATE / watch count)",
         section = overlaySection,
         position = 0
     )
@@ -262,11 +262,12 @@ public interface StaffAlertConfig extends Config {
     @ConfigItem(
         keyName = "showNearby",
         name = "List nearby players",
-        description = "Show names/distances on the overlay",
+        description = "Unused by the slim chatbox bar (kept for compatibility)",
         section = overlaySection,
-        position = 1
+        position = 1,
+        hidden = true
     )
     default boolean showNearby() {
-        return true;
+        return false;
     }
 }
