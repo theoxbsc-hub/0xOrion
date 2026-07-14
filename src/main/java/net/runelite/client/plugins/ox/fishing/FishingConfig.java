@@ -64,12 +64,23 @@ public interface FishingConfig extends Config {
 
     @ConfigItem(
         keyName = "enableShark",
-        name = "Sharks (lvl 75–99)",
+        name = "Sharks (lvl 75–81)",
         description = "Spot 1511 · Harpoon · fish 383",
         section = progressionSection,
         position = 3
     )
     default boolean enableShark() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "enableAngler",
+        name = "Anglers (lvl 82–99)",
+        description = "Spot 6825 · Bait · fish 13439",
+        section = progressionSection,
+        position = 4
+    )
+    default boolean enableAngler() {
         return true;
     }
 

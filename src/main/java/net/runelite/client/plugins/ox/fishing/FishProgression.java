@@ -9,7 +9,7 @@ import net.runelite.api.Item;
 public final class FishProgression {
     /**
      * All bankable fish IDs: unnoted + noted where known.
-     * Includes shrimp/anchovy, tuna, swordfish, lobster, shark, monkfish.
+     * Includes shrimp/anchovy, tuna, swordfish, lobster, shark, monkfish, angler.
      */
     private static final int[] EXTRA_DEPOSIT_IDS = {
         // shrimp / anchovy
@@ -23,7 +23,9 @@ public final class FishProgression {
         // shark
         383, 384,
         // monkfish
-        7944, 7945
+        7944, 7945,
+        // anglerfish
+        13439, 13440
     };
 
     private FishProgression() {
@@ -42,6 +44,9 @@ public final class FishProgression {
         }
         if (config.enableShark()) {
             list.add(FishTier.SHARK);
+        }
+        if (config.enableAngler()) {
+            list.add(FishTier.ANGLER);
         }
         return list;
     }
@@ -128,6 +133,7 @@ public final class FishProgression {
                 || lower.contains("tuna")
                 || lower.contains("shrimp")
                 || lower.contains("anchov")
+                || lower.contains("angler")
                 || lower.contains("karambwan"))) {
                 return false;
             }
@@ -139,6 +145,7 @@ public final class FishProgression {
             || lower.contains("tuna")
             || lower.contains("shrimp")
             || lower.contains("anchov")
+            || lower.contains("angler")
             || lower.contains("karambwan")
             || lower.contains("herring")
             || lower.contains("sardine")

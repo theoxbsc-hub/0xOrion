@@ -35,7 +35,7 @@ import net.unethicalite.api.items.Inventory;
 
 @PluginDescriptor(
     name = "<html><nobr><font color='#B44DFF'>\u25cf 0xFish</font></nobr></html>",
-    description = "Progressive Seabright Pier fishing (shrimp→lobster→monk→shark) with glider travel and deposit any fish.",
+    description = "Progressive Seabright Pier fishing (shrimp→lobster→monk→shark→angler) with glider travel and deposit any fish.",
     tags = {"0x", "fishing", "bot", "automation", "glider", "progression"},
     enabledByDefault = false
 )
