@@ -17,6 +17,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.ox.core.OxConsole;
 import net.runelite.client.plugins.ox.core.OxLoginGate;
 import net.runelite.client.plugins.ox.core.OxLoopedPlugin;
+import net.runelite.client.plugins.ox.core.OxNotify;
 import net.runelite.client.plugins.ox.core.OxPluginRegistry;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -203,6 +204,8 @@ public class StaffAlertPlugin extends OxLoopedPlugin {
             detection.trigger, minutes, detection.cleanedName, detection.distance, why);
         OxConsole.alert("StaffAlert", "LOGOUT  " + detection.cleanedName
             + " @" + detection.distance + "t  for " + minutes + "m  (" + why + ")");
+        OxNotify.staffAlert(
+            detection.cleanedName, detection.distance, minutes, why);
 
         this.logoutClickAttempts = 8;
         forceLogoutClick();

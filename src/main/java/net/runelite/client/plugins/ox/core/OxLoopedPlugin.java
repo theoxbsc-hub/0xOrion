@@ -65,6 +65,11 @@ public abstract class OxLoopedPlugin extends Plugin implements Runnable {
                 sleepMs = this.loop();
             } catch (Throwable t) {
                 log.warn("{} loop() threw", this.getClass().getSimpleName(), t);
+                try {
+                    OxNotify.scriptBreak(this.getClass().getSimpleName(), t);
+                } catch (Throwable ignored) {
+                    // never break the loop host
+                }
                 sleepMs = 1000;
             }
             if (this.loopThread != self) {

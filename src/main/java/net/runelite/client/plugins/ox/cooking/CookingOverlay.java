@@ -94,7 +94,7 @@ class CookingOverlay extends Overlay {
     }
 
     private static Color stateColor(String state) {
-        if ("COOKING".equals(state) || "COOK_CLICK".equals(state)) {
+        if ("COOKING".equals(state) || "COOK_ALL".equals(state) || "COOK_SPACE".equals(state)) {
             return GREEN;
         }
         if ("BANKING".equals(state) || "WITHDRAWING".equals(state) || "TO_BANK".equals(state)) {
@@ -113,8 +113,11 @@ class CookingOverlay extends Overlay {
         if ("WITHDRAWING".equals(state)) {
             return "WITHDRAW";
         }
-        if ("COOK_CLICK".equals(state)) {
-            return "CLICK";
+        if ("COOK_ALL".equals(state)) {
+            return "ALL";
+        }
+        if ("COOK_SPACE".equals(state)) {
+            return "SPACE";
         }
         if ("TO_RANGE".equals(state)) {
             return "RANGE";

@@ -1,6 +1,7 @@
 package net.runelite.client.plugins.ox.core;
 
 import net.runelite.api.Item;
+import net.unethicalite.api.input.Keyboard;
 import net.unethicalite.api.items.Bank;
 import net.unethicalite.api.widgets.Dialog;
 
@@ -22,9 +23,14 @@ public final class SafeBank {
             return false;
         }
         try {
-            Dialog.enterAmount(1);
+            // Escape out of Withdraw-X / Deposit-X so the next tick can use Withdraw-All
+            Keyboard.typed(27);
         } catch (Throwable throwable) {
-            // empty
+            try {
+                Dialog.enterAmount(1);
+            } catch (Throwable ignored) {
+                // empty
+            }
         }
         return true;
     }

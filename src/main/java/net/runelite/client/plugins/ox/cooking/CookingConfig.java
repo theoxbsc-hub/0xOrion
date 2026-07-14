@@ -102,7 +102,7 @@ public interface CookingConfig extends Config {
         position = 1
     )
     default String bankAction() {
-        return "Bank";
+        return "Use";
     }
 
     @ConfigItem(

@@ -25,7 +25,7 @@ import net.unethicalite.api.game.Game;
 
 @PluginDescriptor(
     name = "<html><nobr><font color='#B44DFF'>0xCook</font></nobr></html>",
-    description = "Seabright Pier cooking: bank booth 10517 -> withdraw raw fish -> use on range 114 -> cook click -> bank.",
+    description = "Seabright Pier cooking: open bank (Use) -> withdraw-all raw fish -> use on range 114 -> cook click -> bank.",
     tags = {"0x", "cooking", "cook", "fish", "pier", "bank", "bot"},
     enabledByDefault = false
 )

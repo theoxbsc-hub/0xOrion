@@ -32,7 +32,14 @@ public final class OxScriptActivity {
 
     public static void clear(String scriptId) {
         if (scriptId != null) {
-            LIVE.remove(scriptId);
+            Snapshot removed = LIVE.remove(scriptId);
+            if (removed != null) {
+                try {
+                    OxNotify.scriptStop(removed.displayName, "session ended");
+                } catch (Throwable ignored) {
+                    // never break script teardown
+                }
+            }
         }
     }
 
