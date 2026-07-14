@@ -35,6 +35,17 @@ Same flow as Orion x64: manage accounts in a GUI, then pick a number at launch.
 
 Data: `%USERPROFILE%\.oxrl.\accounts\` · cache: `%USERPROFILE%\.oxrl.\account-cache\<id>\`
 
+## macOS (`0xMAC/`)
+
+Same jars and account JSON; Mac wrappers live under `0xMAC/`.
+
+1. Copy `dist/0x-client.jar` + `dist/ox-incognito-agent.jar` (or `./build-agent.sh` on Mac for the agent)
+2. `cd 0xMAC && chmod +x *.sh *.command`
+3. **Accounts GUI:** `./add-account.sh` (or double-click `add-account.command`) — same job as Windows `Add-Account.bat`
+4. **Launch:** `./launch-0x.sh` (or `launch-0x.command`)
+
+See [0xMAC/README.md](0xMAC/README.md) for the full clone → test walkthrough. Dual-maintain launch/identity with Windows when those change; plugins stay shared in `src/`.
+
 ## Add more plugins
 
 1. Create a package under `src/main/java/net/runelite/client/plugins/ox/<name>/`

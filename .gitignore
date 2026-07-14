@@ -1,7 +1,7 @@
 build/
 dist/*.jar
 dist/ox-incognito-agent*.jar
-lib/
+/lib/
 *.class
 .idea/
 .vscode/
@@ -11,3 +11,7 @@ accounts/
 *.json.bak
 tools/ox-agent/out/*.jar
 tools/ox-agent/stage/*.jar
+tools/ox-agent/lib/*.jar
+0xMAC/build/
+0xMAC/*.jar
+0xMAC/dist/

@@ -1,0 +1,4 @@
+# Shell scripts must be LF so they run on macOS after Windows clones
+0xMAC/*.sh text eol=lf
+0xMAC/*.command text eol=lf
+0xMAC/lib/*.py text eol=lf
