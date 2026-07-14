@@ -1,7 +1,9 @@
 # 0xMAC — macOS launch / accounts / build helpers
 
 Shared game code stays in the repo root (`src/…`, `dist/*.jar`).  
-This folder is **Mac-only wrappers**. When launch/account behaviour changes, update Windows scripts **and** `0xMAC/`.
+This folder is **Mac-only wrappers**. When launch/account behaviour changes, update Windows scripts **and** `0xMAC/` in the same push when you can.
+
+**Dual PC:** work on Windows or Mac → `git push` → other machine `git pull`. Live bots live under `src/` once; jars in `dist/` must be rebuilt+pushed from Windows after plugin changes. x64 reference: `../DecompiledScripts/`.
 
 ## Quick start (clone → play)
 

@@ -1,63 +1,73 @@
-# 0x Client
+# 0x Client (0xOrion)
 
-Personal fork of the same private-server RuneLite/OpenOSRS stack used by the Orion x64 client, with:
+Personal fork of the Orion x64 RSPS client stack, with **our** plugins under `ox.*` (no `svc` licence bots).
 
-- **No** x64 licence dialog / entitlement gate / `svc` bot suite
-- **Our** plugins under `net.runelite.client.plugins.ox.*` (starts with **0xWCBot**)
-- Separate config home: `%USERPROFILE%\.oxrl.` (so it does not fight `%USERPROFILE%\.orion`)
+Config home: `~/.oxrl.` (Windows: `%USERPROFILE%\.oxrl.`)
 
-## Launch (jars are in the repo)
+---
 
-`dist/0x-client.jar` and `dist/ox-incognito-agent.jar` are tracked — after clone you can run without building.
+## Dual PC workflow (Windows + Mac)
 
-Rebuild only when you change plugins (`.\build.ps1` needs the Orion vendor jar).
+One git repo. Shared live code updates both machines when you **push** then **pull**.
 
-## Accounts (proxy + MAC isolation)
+| You change… | Where it lives | Both PCs get it via |
+|-------------|----------------|---------------------|
+| Bots / plugins | `src/main/java/.../ox/` | `git pull` (then rebuild jar on Windows and **commit `dist/*.jar`** so Mac can run without building) |
+| Windows launch / accounts | `Launch-0x.bat`, `Add-Account.bat`, `tools/` | `git pull` |
+| Mac launch / accounts | `0xMAC/` | `git pull` |
+| Shipping client binaries | `dist/0x-client.jar`, `dist/ox-incognito-agent.jar` | `git pull` |
+| x64 reference (read-only) | `DecompiledScripts/` | `git pull` |
 
-Same flow as Orion x64: manage accounts in a GUI, then pick a number at launch.
+**Daily loop**
 
-1. **Account Manager** (like x64 `Add-Account.bat`)
-   ```text
-   Add-Account.bat
-   ```
-   Add / edit / delete accounts. Each gets username + password + proxy + a frozen MAC/HWID.
+1. Work on whichever PC you’re on.
+2. Commit + push when done.
+3. On the other PC next day: `git pull` (Mac: also `chmod +x 0xMAC/*.sh 0xMAC/*.command` once if needed).
 
-2. **Launch** — console lists accounts; type the number to run:
-   ```text
-   Launch-0x.bat
-   ```
-   Applies that account's proxy + `ox-incognito-agent` MAC spoof, then starts the client.
+**If you only edit Java plugins:** rebuild on Windows (`.\build.ps1`), then commit the updated `dist/0x-client.jar` so the Mac gets a runnable client without PowerShell/vendor jar.
 
-Data: `%USERPROFILE%\.oxrl.\accounts\` · cache: `%USERPROFILE%\.oxrl.\account-cache\<id>\`
+**If you only edit launch scripts / docs / DecompiledScripts:** pull is enough — no jar rebuild.
 
-## macOS (`0xMAC/`)
+Keep launch behaviour in sync: when you change account/identity/launcher logic, update **Windows and `0xMAC/`** in the same commit when possible.
 
-1. Clone this repo (jars already in `dist/`)
-2. `cd 0xMAC && chmod +x *.sh *.command`
-3. **Accounts GUI:** `./add-account.sh`
-4. **Launch:** `./launch-0x.sh`
+---
 
-Needs JDK 11+ (`brew install --cask temurin@11`) and Python 3 + Tk for the account GUI.
+## Launch
 
-See [0xMAC/README.md](0xMAC/README.md).
+Jars ship in the repo (`dist/`). Clone → run.
 
-## Rebuild (Windows, optional)
+**Windows:** `Add-Account.bat` → `Launch-0x.bat`  
+**Mac:** `cd 0xMAC && ./add-account.sh` → `./launch-0x.sh`  
+(Needs JDK 11+; Mac GUI needs Python 3 + Tk.)
+
+Accounts: `~/.oxrl./accounts/` (same JSON on both OSes; prefer creating accounts on the OS you play on so MAC/OS spoof matches).
+
+---
+
+## DecompiledScripts/
+
+CFR decompile of Orion **x64** (`svc`) bots + `unethicalite` API — **reference only**, not part of the live build. Browse here when porting features into `ox.*`.
+
+See [DecompiledScripts/README.md](DecompiledScripts/README.md).
+
+---
+
+## Rebuild (Windows)
 
 ```powershell
 .\build.ps1
 ```
 
-Needs JDK 11+ and `Desktop\Orion x64\client_patched.jar`. Then commit updated `dist/*.jar` if you want Mac clones to get the new build.
+Needs JDK 11+ and `Desktop\Orion x64\client_patched.jar`. Commit updated `dist/*.jar` if Mac should run the new build.
 
 ## Add more plugins
 
-1. Create a package under `src/main/java/net/runelite/client/plugins/ox/<name>/`
+1. Package under `src/main/java/net/runelite/client/plugins/ox/<name>/`
 2. Extend `ox.core.OxLoopedPlugin`
-3. Annotate with `@PluginDescriptor`
-4. Re-run `.\build.ps1`
+3. `@PluginDescriptor`
+4. `.\build.ps1` → commit `dist/0x-client.jar` for Mac
 
 ## Notes
 
-- This is for personal use on the same RSPS the base jar targets (`CODEBASE` / modulus already baked in).
-- Stock QoL plugins (Menu Entry Swapper, etc.) remain from the base jar.
-- Do not redistribute the base gamepack / injective client if that violates the server or vendor terms.
+- Personal use on the same RSPS the base jar targets.
+- Do not redistribute the vendor gamepack if that violates server/vendor terms.
